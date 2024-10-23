@@ -64,8 +64,15 @@
                     data.forEach(row => {
                         const title = row[0];           // Primera columna: título
                         const description = row[1];     // Segunda columna: descripción
-                        const startTime = row[2];       // Tercera columna: hora de inicio
-                        const endTime = row[3];         // Cuarta columna: hora de fin
+                        let startTime = row[2];         // Tercera columna: hora de inicio
+                        let endTime = row[3];           // Cuarta columna: hora de fin
+
+                        // Comprobar si el valor de la hora es una cadena o un objeto de fecha
+                        if (typeof startTime === 'object') {
+                            // Si es un objeto de fecha, conviértelo a formato HH:mm
+                            startTime = new Date(startTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                            endTime = new Date(endTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                        }
 
                         const [startHour, startMinute] = startTime.split(':').map(Number);
                         const [endHour, endMinute] = endTime.split(':').map(Number);
