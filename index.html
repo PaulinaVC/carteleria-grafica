@@ -67,11 +67,19 @@
                         let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
                         let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
 
+                        // Mostrar en la consola las horas leídas
+                        console.log('Hora de inicio original:', row[2]);
+                        console.log('Hora de fin original:', row[3]);
+
                         // Convertir las horas a formato HH:mm
                         const startHour = startTime.getHours();
                         const startMinute = startTime.getMinutes().toString().padStart(2, '0');
                         const endHour = endTime.getHours();
                         const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+
+                        console.log(`Actividad: ${title}`);
+                        console.log(`Inicio: ${startHour}:${startMinute}, Fin: ${endHour}:${endMinute}`);
+                        console.log('-----------------------------------------');
 
                         // Comparar la hora actual con el rango de la actividad
                         if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
