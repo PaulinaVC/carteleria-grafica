@@ -45,31 +45,27 @@
     </div>
 
     <script>
-        // URL del CSV de Google Sheets (asegúrate de que la hoja esté publicada para acceso público)
-        const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6_rdN7NB6eDKOeftkOpUA740QRhvn-aL2EATQK9U6r_wiDrcsNnbkvMbWIip0OQnMfnC-Y1dvlFXK/pub?output=csv';
+        // URL del Google Apps Script que devuelve JSON
+        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';  // Reemplaza con tu URL de Apps Script
 
         function fetchData() {
-            const noCacheURL = `${sheetURL}&t=${Date.now()}`;  // Evitar el caché añadiendo un timestamp único
-
-            console.time('Fetching CSV');  // Para medir el tiempo de descarga
-            fetch(noCacheURL)
-                .then(response => response.text())
+            console.time('Fetching JSON');  // Medir tiempo de descarga
+            fetch(jsonURL)
+                .then(response => response.json())
                 .then(data => {
-                    console.timeEnd('Fetching CSV');  // Mostrar el tiempo de descarga en la consola
-                    const rows = data.split('\n').slice(1); // Obtener las filas del CSV, excluyendo el encabezado
+                    console.timeEnd('Fetching JSON');  // Mostrar el tiempo de descarga
                     const now = new Date();
                     const currentHour = now.getHours();
                     const currentMinute = now.getMinutes();
 
                     let foundActivity = false;
 
-                    rows.forEach(row => {
-                        const cols = row.split(',');
-
-                        const title = cols[0];
-                        const description = cols[1];
-                        const startTime = cols[2];
-                        const endTime = cols[3];
+                    // Recorrer las filas de datos
+                    data.forEach(row => {
+                        const title = row[0];           // Primera columna: título
+                        const description = row[1];     // Segunda columna: descripción
+                        const startTime = row[2];       // Tercera columna: hora de inicio
+                        const endTime = row[3];         // Cuarta columna: hora de fin
 
                         const [startHour, startMinute] = startTime.split(':').map(Number);
                         const [endHour, endMinute] = endTime.split(':').map(Number);
