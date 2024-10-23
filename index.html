@@ -46,7 +46,7 @@
 
     <script>
         // URL del Google Apps Script que devuelve JSON
-        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';  // Reemplaza con tu URL de Apps Script
+        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
         function fetchData() {
             console.time('Fetching JSON');  // Medir tiempo de descarga
@@ -60,29 +60,25 @@
 
                     let foundActivity = false;
 
-                    // Recorrer las filas de datos
-                    data.forEach(row => {
+                    // Recorrer las filas de datos (omitimos la primera fila porque es el encabezado)
+                    data.slice(1).forEach(row => {
                         const title = row[0];           // Primera columna: título
                         const description = row[1];     // Segunda columna: descripción
-                        let startTime = row[2];         // Tercera columna: hora de inicio
-                        let endTime = row[3];           // Cuarta columna: hora de fin
+                        let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
+                        let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
 
-                        // Comprobar si el valor de la hora es una cadena o un objeto de fecha
-                        if (typeof startTime === 'object') {
-                            // Si es un objeto de fecha, conviértelo a formato HH:mm
-                            startTime = new Date(startTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-                            endTime = new Date(endTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-                        }
+                        // Convertir las horas a formato HH:mm
+                        const startHour = startTime.getHours();
+                        const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                        const endHour = endTime.getHours();
+                        const endMinute = endTime.getMinutes().toString().padStart(2, '0');
 
-                        const [startHour, startMinute] = startTime.split(':').map(Number);
-                        const [endHour, endMinute] = endTime.split(':').map(Number);
-
-                        // Comprobar si la hora actual está dentro del rango de la actividad
+                        // Comparar la hora actual con el rango de la actividad
                         if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
                             (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
                             document.getElementById('activity-title').innerText = title;
                             document.getElementById('activity-description').innerText = description;
-                            document.getElementById('activity-time').innerText = `Horario: ${startTime} - ${endTime}`;
+                            document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                             foundActivity = true;
                         }
                     });
