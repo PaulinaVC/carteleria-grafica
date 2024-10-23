@@ -18,7 +18,7 @@
         }
         .text-container {
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.7); /* Fondo transparente */
+            background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
             width: 80%;
@@ -39,43 +39,61 @@
 </head>
 <body>
     <div class="text-container">
-        <h1 id="activity-title">Nombre de la Actividad</h1>
-        <p id="activity-description">Descripción breve de la actividad.</p>
-        <p id="activity-time">Horario: 10:00 AM - 11:00 AM</p>
+        <h1 id="activity-title">Cargando...</h1>
+        <p id="activity-description">Cargando descripción...</p>
+        <p id="activity-time">Cargando horario...</p>
     </div>
 
     <script>
-        const activityData = [
-            {
-                title: "Reunión de Proyecto",
-                description: "Discusión sobre el avance del proyecto.",
-                time: "10:00 AM - 11:00 AM"
-            },
-            {
-                title: "Taller de Innovación",
-                description: "Exploración de nuevas ideas para el negocio.",
-                time: "12:00 PM - 1:00 PM"
-            },
-            {
-                title: "Capacitación en Seguridad",
-                description: "Entrenamiento para nuevos protocolos de seguridad.",
-                time: "2:00 PM - 3:00 PM"
-            }
-        ];
+        // URL del CSV de Google Sheets
+        const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6_rdN7NB6eDKOeftkOpUA740QRhvn-aL2EATQK9U6r_wiDrcsNnbkvMbWIip0OQnMfnC-Y1dvlFXK/pub?output=csv'; // Reemplaza con la URL de tu Google Sheet en formato CSV
 
-        let index = 0;
+        function fetchData() {
+            fetch(sheetURL)
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').slice(1); // Obtener las filas del CSV
+                    const now = new Date();
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
 
-        function updateText() {
-            document.getElementById("activity-title").innerText = activityData[index].title;
-            document.getElementById("activity-description").innerText = activityData[index].description;
-            document.getElementById("activity-time").innerText = activityData[index].time;
+                    let foundActivity = false;
 
-            index = (index + 1) % activityData.length;
+                    rows.forEach(row => {
+                        const cols = row.split(',');
+
+                        const title = cols[0];
+                        const description = cols[1];
+                        const startTime = cols[2];
+                        const endTime = cols[3];
+
+                        const [startHour, startMinute] = startTime.split(':').map(Number);
+                        const [endHour, endMinute] = endTime.split(':').map(Number);
+
+                        // Comprobar si la hora actual está dentro del rango de la actividad
+                        if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
+                            (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
+                            document.getElementById('activity-title').innerText = title;
+                            document.getElementById('activity-description').innerText = description;
+                            document.getElementById('activity-time').innerText = `Horario: ${startTime} - ${endTime}`;
+                            foundActivity = true;
+                        }
+                    });
+
+                    if (!foundActivity) {
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en este momento.';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
         }
 
-        setInterval(updateText, 5000);  // Cambia el texto cada 5 segundos
+        // Actualizar la información al cargar la página
+        fetchData();
+
+        // Actualizar la información cada 5 minutos
+        setInterval(fetchData, 300000);  // 5 minutos = 300000 ms
     </script>
 </body>
 </html>
-
-       
