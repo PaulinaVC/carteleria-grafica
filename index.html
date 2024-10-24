@@ -57,25 +57,23 @@
             'background-image2.jpg',
             'background-image3.jpg'
         ];
-        const backgrounds = backgrounds_comodin;
         let currentBackgroundIndex = 0;
-        let backgroundInterval; // Variable para controlar el intervalo de rotación de fondo
+        let backgroundInterval;  // Para controlar la rotación de fondos
 
         // Función para cambiar el fondo
         function changeBackground() {
-            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
-            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
+            document.body.style.backgroundImage = `url('${backgrounds_comodin[currentBackgroundIndex]}')`;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds_comodin.length;
         }
 
         // Función para iniciar la rotación de fondos
         function startBackgroundRotation() {
-            // Detener cualquier intervalo anterior
             if (backgroundInterval) {
-                clearInterval(backgroundInterval);
+                clearInterval(backgroundInterval);  // Limpiar cualquier rotación previa
             }
             // Cambiar el fondo inmediatamente y luego cada 10 segundos
             changeBackground();
-            backgroundInterval = setInterval(changeBackground, 10000);  // Cambiar el fondo cada 10 segundos
+            backgroundInterval = setInterval(changeBackground, 10000);  // Cambiar cada 10 segundos
         }
 
         // Obtener el parámetro 'sala' de la URL
@@ -86,17 +84,17 @@
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
         function fetchData() {
-            console.time('Fetching JSON');  // Medir tiempo de descarga
+            console.time('Fetching JSON');
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
-                    console.timeEnd('Fetching JSON');  // Mostrar el tiempo de descarga
+                    console.timeEnd('Fetching JSON');
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  // Obtener la fecha actual en formato YYYY-MM-DD
 
                     let foundActivity = false;
 
-                    // Recorrer las filas de datos (omitimos la primera fila porque es el encabezado)
+                    // Recorrer las filas de datos
                     data.slice(1).forEach(row => {
                         const title = row[0];           // Primera columna: título
                         const description = row[1];     // Segunda columna: descripción
@@ -104,14 +102,12 @@
                         const endTimeStr = row[3];      // Cuarta columna: hora de fin como cadena
                         const room = row[4];            // Quinta columna: sala
                         const eventDateStr = row[5];    // Sexta columna: fecha como cadena
-                        const imageUrl = row[6];        // Séptima columna: URL de la imagen (nueva columna en tu hoja)
+                        const imageUrl = row[6];        // Séptima columna: URL de la imagen (si hay)
 
                         // Validar la sala y la fecha
-                        if (!room || !eventDateStr) {
-                            return;  // Si no hay sala o fecha, saltar esta fila
-                        }
+                        if (!room || !eventDateStr) return;
 
-                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];  // Obtener solo la parte de la fecha
+                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
 
                         // Solo procesar si la sala y la fecha coinciden con la actual
                         if (room === sala && eventDate === today) {
@@ -121,19 +117,20 @@
                                 endTime = new Date(endTimeStr);
                             } catch (error) {
                                 console.error('Fecha inválida:', error);
-                                return;  // Saltar la fila si no se pueden convertir las fechas
+                                return;
                             }
 
-                            // Si hay una imagen asociada, mostrar solo la imagen y detener la rotación de fondo
+                            // Si hay una imagen asociada al evento, quitar texto y usar la imagen como fondo
                             if (imageUrl && imageUrl.trim() !== "") {
-                                const backgrounds = document.getElementById('activity-container');
-                                container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                const container = document.getElementById('activity-container');
+                                container.innerHTML = '';  // Quitar todo el texto del contenedor
+                                document.body.style.backgroundImage = `url('${imageUrl}')`;  // Usar la imagen como fondo
+
                                 if (backgroundInterval) {
-                                    clearInterval(backgroundInterval);  // Detener la rotación de fondo si hay una imagen
+                                    clearInterval(backgroundInterval);  // Detener la rotación de fondo
                                 }
-                            } else { 
-                                const backgrounds = backgrounds_comodin;
-                                // Si no hay imagen, mostrar el texto y cambiar el fondo
+                            } else {
+                                // Si no hay imagen, mostrar el texto y continuar la rotación de fondos
                                 const startHour = startTime.getHours();
                                 const startMinute = startTime.getMinutes().toString().padStart(2, '0');
                                 const endHour = endTime.getHours();
@@ -146,8 +143,7 @@
 
                                 // Iniciar la rotación de fondo si no hay imagen
                                 startBackgroundRotation();  
-                            } 
-                            const backgrounds = backgrounds_comodin;
+                            }
                         }
                     });
 
@@ -168,8 +164,8 @@
         // Llamar a fetchData al cargar la página
         fetchData();
 
-        // Actualizar la información cada 30 segundos (puedes ajustar el tiempo si lo necesitas)
-        setInterval(fetchData, 30000);  // 30 segundos = 30000 ms
+        // Actualizar la información cada 30 segundos
+        setInterval(fetchData, 30000);  // Cada 30 segundos = 30000 ms
 
     </script>
 </body>
