@@ -48,28 +48,10 @@
     <script>
         // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sala = urlParams.get('sala') || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Eliminar espacios adicionales de la sala
 
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
-
-        // Array de imágenes de fondo
-        const backgrounds = [
-            'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
-            'background-image2.jpg',
-            'background-image3.jpg'
-        ];
-
-        let currentBackgroundIndex = 0;
-
-        // Función para cambiar el fondo
-        function changeBackground() {
-            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
-            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
-        }
-
-        // Cambiar el fondo cada 10 segundos (10000 ms)
-        setInterval(changeBackground, 10000);
 
         function fetchData() {
             console.time('Fetching JSON');  // Medir tiempo de descarga
@@ -90,8 +72,8 @@
                         const description = row[1];     // Segunda columna: descripción
                         let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
                         let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
-                        const room = row[4];           // Quinta columna: sala
-                        const eventDate = row[5];      // Sexta columna: fecha
+                        const room = row[4]?.trim();    // Quinta columna: sala (asegúrate de eliminar espacios adicionales)
+                        const eventDate = row[5];       // Sexta columna: fecha
 
                         // Mostrar solo los eventos de la sala actual y la fecha actual
                         if (room === sala && eventDate === today) {
@@ -129,12 +111,8 @@
         // Llamar a fetchData al cargar la página
         fetchData();
 
-        // Cambiar el fondo de inmediato
-        changeBackground();
-
         // Actualizar la información cada 30 segundos (puedes ajustar el tiempo si lo necesitas)
         setInterval(fetchData, 30000);  // 30 segundos = 30000 ms
     </script>
 </body>
 </html>
-
