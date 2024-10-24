@@ -52,11 +52,12 @@
 
     <script>
         // Array de imágenes de fondo
-        const backgrounds = [
+        const backgrounds_comodin = [
             'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
             'background-image2.jpg',
             'background-image3.jpg'
         ];
+        const backgrounds = backgrounds_comodin;
         let currentBackgroundIndex = 0;
         let backgroundInterval; // Variable para controlar el intervalo de rotación de fondo
 
@@ -125,12 +126,13 @@
 
                             // Si hay una imagen asociada, mostrar solo la imagen y detener la rotación de fondo
                             if (imageUrl && imageUrl.trim() !== "") {
-                                const container = document.getElementById('activity-container');
+                                const backgrounds = document.getElementById('activity-container');
                                 container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
                                 if (backgroundInterval) {
                                     clearInterval(backgroundInterval);  // Detener la rotación de fondo si hay una imagen
                                 }
-                            } else {
+                            } else { 
+                                const backgrounds = backgrounds_comodin;
                                 // Si no hay imagen, mostrar el texto y cambiar el fondo
                                 const startHour = startTime.getHours();
                                 const startMinute = startTime.getMinutes().toString().padStart(2, '0');
@@ -144,7 +146,8 @@
 
                                 // Iniciar la rotación de fondo si no hay imagen
                                 startBackgroundRotation();  
-                            }
+                            } 
+                            const backgrounds = backgrounds_comodin;
                         }
                     });
 
