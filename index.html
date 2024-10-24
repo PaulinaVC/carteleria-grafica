@@ -12,11 +12,29 @@
             background-size: cover;
             background-position: center;
             height: 100vh;
-            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: background-image 1s ease-in-out;
+        }
+        .text-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+        }
+        h1, p {
+            margin: 0;
+            padding: 10px 0;
+        }
+        h1 {
+            font-size: 8em;
+            color: #333;
+        }
+        p {
+            font-size: 6em;
+            color: #666;
         }
         .activity-image {
             width: 100vw; /* Ocupar todo el ancho de la pantalla */
@@ -27,10 +45,26 @@
 </head>
 <body>
     <div class="text-container" id="activity-container">
-        <!-- Aquí se cargará la imagen de la actividad -->
+        <h1 id="activity-title">Cargando...</h1>
+        <p id="activity-description">Cargando descripción...</p>
+        <p id="activity-time">Cargando horario...</p>
     </div>
 
     <script>
+        // Array de imágenes de fondo
+        const backgrounds = [
+            'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
+            'background-image2.jpg',
+            'background-image3.jpg'
+        ];
+        let currentBackgroundIndex = 0;
+
+        // Función para cambiar el fondo
+        function changeBackground() {
+            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
+        }
+
         // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
@@ -57,7 +91,7 @@
                         const endTimeStr = row[3];      // Cuarta columna: hora de fin como cadena
                         const room = row[4];            // Quinta columna: sala
                         const eventDateStr = row[5];    // Sexta columna: fecha como cadena
-                        const imageUrl = row[6];        // Séptima columna: URL de la imagen
+                        const imageUrl = row[6];        // Séptima columna: URL de la imagen (nueva columna en tu hoja)
 
                         // Validar la sala y la fecha
                         if (!room || !eventDateStr) {
@@ -68,27 +102,58 @@
 
                         // Solo procesar si la sala y la fecha coinciden con la actual
                         if (room === sala && eventDate === today) {
+                            let startTime, endTime;
+                            try {
+                                startTime = new Date(startTimeStr);
+                                endTime = new Date(endTimeStr);
+                            } catch (error) {
+                                console.error('Fecha inválida:', error);
+                                return;  // Saltar la fila si no se pueden convertir las fechas
+                            }
+
                             // Si hay una imagen asociada, mostrar solo la imagen
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
                                 container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                            } else {
+                                // Si no hay imagen, mostrar el texto y cambiar el fondo
+                                const startHour = startTime.getHours();
+                                const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                                const endHour = endTime.getHours();
+                                const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
+                                foundActivity = true;
+
+                                // Cambiar el fondo cada 10 segundos (10000 ms) solo si no hay imagen
+                                changeBackground();  // Cambiar el fondo inmediatamente
+                                setInterval(changeBackground, 10000);  // Cambiar el fondo cada 10 segundos
                             }
-                            foundActivity = true;
                         }
                     });
 
                     if (!foundActivity) {
-                        document.getElementById('activity-container').innerText = 'No hay actividad programada en esta sala para hoy.';
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('activity-container').innerText = 'Error al cargar la información. Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-time').innerText = '';
                 });
         }
 
         // Llamar a fetchData al cargar la página
         fetchData();
+
+        // Actualizar la información cada 30 segundos (puedes ajustar el tiempo si lo necesitas)
+        setInterval(fetchData, 30000);  // 30 segundos = 30000 ms
+
     </script>
 </body>
 </html>
