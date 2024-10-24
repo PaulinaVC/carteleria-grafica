@@ -92,10 +92,11 @@
                         let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
                         const room = row[4];           // Quinta columna: sala
                         const eventDate = row[5];      // Sexta columna: fecha
-
+                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
                         // Mostrar solo los eventos de la sala actual y la fecha actual
                         if (room === sala && eventDate === today) {
                             // Convertir las horas a formato HH:mm
+                             // Extraer solo la parte de la fecha, ignorando la hora
                             const startHour = startTime.getHours();
                             const startMinute = startTime.getMinutes().toString().padStart(2, '0');
                             const endHour = endTime.getHours();
