@@ -70,13 +70,13 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];           // Primera columna: título
                         const description = row[1];     // Segunda columna: descripción
-                        let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
-                        let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
+                        const startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
+                        const endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
                         const room = row[4]?.trim();    // Quinta columna: sala (asegúrate de eliminar espacios adicionales)
-                        const eventDate = row[5];       // Sexta columna: fecha
+                        const eventDate = new Date(row[5]).toISOString().split('T')[0];  // Sexta columna: fecha (extraer solo la parte de la fecha)
 
-                        // Mostrar solo los eventos de la sala actual y la fecha actual
-                        if (room === sala && eventDate === today) {
+                        // Verificar que la sala y la fecha sean válidas
+                        if (room && eventDate === today && room === sala) {
                             // Convertir las horas a formato HH:mm
                             const startHour = startTime.getHours();
                             const startMinute = startTime.getMinutes().toString().padStart(2, '0');
