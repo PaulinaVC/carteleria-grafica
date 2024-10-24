@@ -9,12 +9,13 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: url('background-image.jpg') no-repeat center center fixed;
             background-size: cover;
+            background-position: center;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-image 1s ease-in-out;
         }
         .text-container {
             text-align: center;
@@ -45,8 +46,30 @@
     </div>
 
     <script>
+        // Obtener el parámetro 'sala' de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sala = urlParams.get('sala') || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
+
+        // Array de imágenes de fondo
+        const backgrounds = [
+            'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
+            'background-image2.jpg',
+            'background-image3.jpg'
+        ];
+
+        let currentBackgroundIndex = 0;
+
+        // Función para cambiar el fondo
+        function changeBackground() {
+            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
+        }
+
+        // Cambiar el fondo cada 10 segundos (10000 ms)
+        setInterval(changeBackground, 10000);
 
         function fetchData() {
             console.time('Fetching JSON');  // Medir tiempo de descarga
@@ -57,6 +80,7 @@
                     const now = new Date();
                     const currentHour = now.getHours();
                     const currentMinute = now.getMinutes();
+                    const today = now.toISOString().split('T')[0];  // Obtener la fecha actual en formato YYYY-MM-DD
 
                     let foundActivity = false;
 
@@ -66,33 +90,30 @@
                         const description = row[1];     // Segunda columna: descripción
                         let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
                         let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
+                        const room = row[4];           // Quinta columna: sala
+                        const eventDate = row[5];      // Sexta columna: fecha
 
-                        // Mostrar en la consola las horas leídas
-                        console.log('Hora de inicio original:', row[2]);
-                        console.log('Hora de fin original:', row[3]);
+                        // Mostrar solo los eventos de la sala actual y la fecha actual
+                        if (room === sala && eventDate === today) {
+                            // Convertir las horas a formato HH:mm
+                            const startHour = startTime.getHours();
+                            const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                            const endHour = endTime.getHours();
+                            const endMinute = endTime.getMinutes().toString().padStart(2, '0');
 
-                        // Convertir las horas a formato HH:mm
-                        const startHour = startTime.getHours();
-                        const startMinute = startTime.getMinutes().toString().padStart(2, '0');
-                        const endHour = endTime.getHours();
-                        const endMinute = endTime.getMinutes().toString().padStart(2, '0');
-
-                        console.log(`Actividad: ${title}`);
-                        console.log(`Inicio: ${startHour}:${startMinute}, Fin: ${endHour}:${endMinute}`);
-                        console.log('-----------------------------------------');
-
-                        // Comparar la hora actual con el rango de la actividad
-                        if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
-                            (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
-                            document.getElementById('activity-title').innerText = title;
-                            document.getElementById('activity-description').innerText = description;
-                            document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
-                            foundActivity = true;
+                            // Comparar la hora actual con el rango de la actividad
+                            if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
+                                (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
+                                foundActivity = true;
+                            }
                         }
                     });
 
                     if (!foundActivity) {
-                        document.getElementById('activity-title').innerText = 'No hay actividad programada en este momento.';
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                     }
@@ -108,8 +129,12 @@
         // Llamar a fetchData al cargar la página
         fetchData();
 
+        // Cambiar el fondo de inmediato
+        changeBackground();
+
         // Actualizar la información cada 30 segundos (puedes ajustar el tiempo si lo necesitas)
         setInterval(fetchData, 30000);  // 30 segundos = 30000 ms
     </script>
 </body>
 </html>
+
