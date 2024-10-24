@@ -41,6 +41,9 @@
             height: 100vh;
             object-fit: cover;
         }
+        .hidden {
+            display: none;  /* Clase CSS para ocultar el cuadro blanco */
+        }
     </style>
 </head>
 <body>
@@ -129,7 +132,7 @@
 
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
-                                container.innerHTML = '';  
+                                container.classList.add('hidden');  // Ocultar el cuadro blanco
                                 document.body.style.backgroundImage = `url('${imageUrl}')`; 
 
                                 if (backgroundInterval) {
@@ -146,6 +149,7 @@
                                 document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                                 foundActivity = true;
 
+                                document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro blanco si no hay imagen
                                 startBackgroundRotation();  
                             }
                         }
@@ -155,6 +159,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro si no hay actividad
                     }
                 })
                 .catch(error => {
@@ -162,6 +167,7 @@
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
+                    document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro si hay un error
                 });
         }
 
