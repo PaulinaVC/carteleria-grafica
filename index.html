@@ -37,9 +37,9 @@
             color: #666;
         }
         .activity-image {
-            width: 100vw; /* Ocupar todo el ancho de la pantalla */
-            height: 100vh; /* Ocupar todo el alto de la pantalla */
-            object-fit: cover; /* Asegurar que la imagen se ajuste sin distorsión */
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -53,12 +53,12 @@
     <script>
         // Array de imágenes de fondo
         const backgrounds_comodin = [
-            'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
+            'background-image1.jpg',  
             'background-image2.jpg',
             'background-image3.jpg'
         ];
         let currentBackgroundIndex = 0;
-        let backgroundInterval;  // Para controlar la rotación de fondos
+        let backgroundInterval;
 
         // Función para cambiar el fondo
         function changeBackground() {
@@ -69,16 +69,15 @@
         // Función para iniciar la rotación de fondos
         function startBackgroundRotation() {
             if (backgroundInterval) {
-                clearInterval(backgroundInterval);  // Limpiar cualquier rotación previa
+                clearInterval(backgroundInterval);
             }
-            // Cambiar el fondo inmediatamente y luego cada 10 segundos
             changeBackground();
-            backgroundInterval = setInterval(changeBackground, 10000);  // Cambiar cada 10 segundos
+            backgroundInterval = setInterval(changeBackground, 10000);
         }
 
         // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1'; 
 
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
@@ -86,30 +85,38 @@
         function fetchData() {
             console.time('Fetching JSON');
             fetch(jsonURL)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.timeEnd('Fetching JSON');
+
+                    // Asegúrate de que los datos tengan el formato adecuado
+                    if (!Array.isArray(data) || data.length < 1 || !Array.isArray(data[0])) {
+                        throw new Error("El formato de los datos es incorrecto.");
+                    }
+
                     const now = new Date();
-                    const today = now.toISOString().split('T')[0];  // Obtener la fecha actual en formato YYYY-MM-DD
+                    const today = now.toISOString().split('T')[0]; 
 
                     let foundActivity = false;
 
-                    // Recorrer las filas de datos
                     data.slice(1).forEach(row => {
-                        const title = row[0];           // Primera columna: título
-                        const description = row[1];     // Segunda columna: descripción
-                        const startTimeStr = row[2];    // Tercera columna: hora de inicio como cadena
-                        const endTimeStr = row[3];      // Cuarta columna: hora de fin como cadena
-                        const room = row[4];            // Quinta columna: sala
-                        const eventDateStr = row[5];    // Sexta columna: fecha como cadena
-                        const imageUrl = row[6];        // Séptima columna: URL de la imagen (si hay)
+                        const title = row[0];           
+                        const description = row[1];     
+                        const startTimeStr = row[2];    
+                        const endTimeStr = row[3];      
+                        const room = row[4];            
+                        const eventDateStr = row[5];    
+                        const imageUrl = row[6];        
 
-                        // Validar la sala y la fecha
                         if (!room || !eventDateStr) return;
 
                         const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
 
-                        // Solo procesar si la sala y la fecha coinciden con la actual
                         if (room === sala && eventDate === today) {
                             let startTime, endTime;
                             try {
@@ -120,17 +127,15 @@
                                 return;
                             }
 
-                            // Si hay una imagen asociada al evento, quitar texto y usar la imagen como fondo
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
-                                container.innerHTML = '';  // Quitar todo el texto del contenedor
-                                document.body.style.backgroundImage = `url('${imageUrl}')`;  // Usar la imagen como fondo
+                                container.innerHTML = '';  
+                                document.body.style.backgroundImage = `url('${imageUrl}')`; 
 
                                 if (backgroundInterval) {
-                                    clearInterval(backgroundInterval);  // Detener la rotación de fondo
+                                    clearInterval(backgroundInterval);  
                                 }
                             } else {
-                                // Si no hay imagen, mostrar el texto y continuar la rotación de fondos
                                 const startHour = startTime.getHours();
                                 const startMinute = startTime.getMinutes().toString().padStart(2, '0');
                                 const endHour = endTime.getHours();
@@ -141,7 +146,6 @@
                                 document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                                 foundActivity = true;
 
-                                // Iniciar la rotación de fondo si no hay imagen
                                 startBackgroundRotation();  
                             }
                         }
@@ -165,7 +169,7 @@
         fetchData();
 
         // Actualizar la información cada 30 segundos
-        setInterval(fetchData, 30000);  // Cada 30 segundos = 30000 ms
+        setInterval(fetchData, 30000);  
 
     </script>
 </body>
