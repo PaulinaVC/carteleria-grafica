@@ -36,32 +36,27 @@
             font-size: 6em;
             color: #666;
         }
+        .activity-image {
+            max-width: 100%;
+            max-height: 100vh;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
-    <div class="text-container">
+    <div class="text-container" id="activity-container">
         <h1 id="activity-title">Cargando...</h1>
         <p id="activity-description">Cargando descripción...</p>
         <p id="activity-time">Cargando horario...</p>
     </div>
 
     <script>
-        // Obtener el parámetro 'sala' de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
-
-        console.log("Sala desde la URL: ", sala);  // Mostrar sala en la consola
-
-        // URL del Google Apps Script que devuelve JSON
-        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
-
         // Array de imágenes de fondo
         const backgrounds = [
             'background-image1.jpg',  // Reemplaza con las URL de tus imágenes
             'background-image2.jpg',
             'background-image3.jpg'
         ];
-
         let currentBackgroundIndex = 0;
 
         // Función para cambiar el fondo
@@ -70,8 +65,12 @@
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
         }
 
-        // Cambiar el fondo cada 10 segundos (10000 ms)
-        setInterval(changeBackground, 10000);
+        // Obtener el parámetro 'sala' de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+
+        // URL del Google Apps Script que devuelve JSON
+        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
         function fetchData() {
             console.time('Fetching JSON');  // Medir tiempo de descarga
@@ -81,8 +80,6 @@
                     console.timeEnd('Fetching JSON');  // Mostrar el tiempo de descarga
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  // Obtener la fecha actual en formato YYYY-MM-DD
-
-                    console.log("Fecha actual: ", today);  // Mostrar la fecha actual
 
                     let foundActivity = false;
 
@@ -94,6 +91,7 @@
                         const endTimeStr = row[3];      // Cuarta columna: hora de fin como cadena
                         const room = row[4];            // Quinta columna: sala
                         const eventDateStr = row[5];    // Sexta columna: fecha como cadena
+                        const imageUrl = row[6];        // Séptima columna: URL de la imagen (nueva columna en tu hoja)
 
                         // Validar la sala y la fecha
                         if (!room || !eventDateStr) {
@@ -101,8 +99,6 @@
                         }
 
                         const eventDate = new Date(eventDateStr).toISOString().split('T')[0];  // Obtener solo la parte de la fecha
-
-                        console.log(`Evento: ${title} - Sala: ${room} - Fecha: ${eventDate}`);  // Mostrar los detalles del evento
 
                         // Solo procesar si la sala y la fecha coinciden con la actual
                         if (room === sala && eventDate === today) {
@@ -115,18 +111,17 @@
                                 return;  // Saltar la fila si no se pueden convertir las fechas
                             }
 
-                            // Convertir las horas a formato HH:mm
-                            const startHour = startTime.getHours();
-                            const startMinute = startTime.getMinutes().toString().padStart(2, '0');
-                            const endHour = endTime.getHours();
-                            const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+                            // Si hay una imagen asociada, mostrar solo la imagen
+                            if (imageUrl && imageUrl.trim() !== "") {
+                                const container = document.getElementById('activity-container');
+                                container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                            } else {
+                                // Si no hay imagen, mostrar el texto y cambiar el fondo
+                                const startHour = startTime.getHours();
+                                const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                                const endHour = endTime.getHours();
+                                const endMinute = endTime.getMinutes().toString().padStart(2, '0');
 
-                            // Comparar la hora actual con el rango de la actividad
-                            const currentHour = now.getHours();
-                            const currentMinute = now.getMinutes();
-
-                            if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
-                                (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
                                 document.getElementById('activity-title').innerText = title;
                                 document.getElementById('activity-description').innerText = description;
                                 document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
@@ -157,7 +152,10 @@
 
         // Actualizar la información cada 30 segundos (puedes ajustar el tiempo si lo necesitas)
         setInterval(fetchData, 30000);  // 30 segundos = 30000 ms
+
+        // Cambiar el fondo cada 10 segundos (10000 ms)
+        setInterval(changeBackground, 10000);
+        
     </script>
 </body>
 </html>
-
