@@ -58,11 +58,23 @@
             'background-image3.jpg'
         ];
         let currentBackgroundIndex = 0;
+        let backgroundInterval; // Variable para controlar el intervalo de rotación de fondo
 
         // Función para cambiar el fondo
         function changeBackground() {
             document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;  // Cambiar al siguiente fondo
+        }
+
+        // Función para iniciar la rotación de fondos
+        function startBackgroundRotation() {
+            // Detener cualquier intervalo anterior
+            if (backgroundInterval) {
+                clearInterval(backgroundInterval);
+            }
+            // Cambiar el fondo inmediatamente y luego cada 10 segundos
+            changeBackground();
+            backgroundInterval = setInterval(changeBackground, 10000);  // Cambiar el fondo cada 10 segundos
         }
 
         // Obtener el parámetro 'sala' de la URL
@@ -111,10 +123,13 @@
                                 return;  // Saltar la fila si no se pueden convertir las fechas
                             }
 
-                            // Si hay una imagen asociada, mostrar solo la imagen
+                            // Si hay una imagen asociada, mostrar solo la imagen y detener la rotación de fondo
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
                                 container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                if (backgroundInterval) {
+                                    clearInterval(backgroundInterval);  // Detener la rotación de fondo si hay una imagen
+                                }
                             } else {
                                 // Si no hay imagen, mostrar el texto y cambiar el fondo
                                 const startHour = startTime.getHours();
@@ -127,9 +142,8 @@
                                 document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                                 foundActivity = true;
 
-                                // Cambiar el fondo cada 10 segundos (10000 ms) solo si no hay imagen
-                                changeBackground();  // Cambiar el fondo inmediatamente
-                                setInterval(changeBackground, 10000);  // Cambiar el fondo cada 10 segundos
+                                // Iniciar la rotación de fondo si no hay imagen
+                                startBackgroundRotation();  
                             }
                         }
                     });
