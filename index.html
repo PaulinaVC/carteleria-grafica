@@ -48,7 +48,9 @@
     <script>
         // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sala = urlParams.get('sala') || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+
+        console.log("Sala desde la URL: ", sala);  // Mostrar sala en la consola
 
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
@@ -78,9 +80,9 @@
                 .then(data => {
                     console.timeEnd('Fetching JSON');  // Mostrar el tiempo de descarga
                     const now = new Date();
-                    const currentHour = now.getHours();
-                    const currentMinute = now.getMinutes();
                     const today = now.toISOString().split('T')[0];  // Obtener la fecha actual en formato YYYY-MM-DD
+
+                    console.log("Fecha actual: ", today);  // Mostrar la fecha actual
 
                     let foundActivity = false;
 
@@ -88,21 +90,41 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];           // Primera columna: título
                         const description = row[1];     // Segunda columna: descripción
-                        let startTime = new Date(row[2]);  // Tercera columna: convertir hora de inicio desde ISO 8601
-                        let endTime = new Date(row[3]);    // Cuarta columna: convertir hora de fin desde ISO 8601
-                        const room = row[4];           // Quinta columna: sala
-                        const eventDate = row[5];      // Sexta columna: fecha
-                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
-                        // Mostrar solo los eventos de la sala actual y la fecha actual
+                        const startTimeStr = row[2];    // Tercera columna: hora de inicio como cadena
+                        const endTimeStr = row[3];      // Cuarta columna: hora de fin como cadena
+                        const room = row[4];            // Quinta columna: sala
+                        const eventDateStr = row[5];    // Sexta columna: fecha como cadena
+
+                        // Validar la sala y la fecha
+                        if (!room || !eventDateStr) {
+                            return;  // Si no hay sala o fecha, saltar esta fila
+                        }
+
+                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];  // Obtener solo la parte de la fecha
+
+                        console.log(`Evento: ${title} - Sala: ${room} - Fecha: ${eventDate}`);  // Mostrar los detalles del evento
+
+                        // Solo procesar si la sala y la fecha coinciden con la actual
                         if (room === sala && eventDate === today) {
+                            let startTime, endTime;
+                            try {
+                                startTime = new Date(startTimeStr);
+                                endTime = new Date(endTimeStr);
+                            } catch (error) {
+                                console.error('Fecha inválida:', error);
+                                return;  // Saltar la fila si no se pueden convertir las fechas
+                            }
+
                             // Convertir las horas a formato HH:mm
-                             // Extraer solo la parte de la fecha, ignorando la hora
                             const startHour = startTime.getHours();
                             const startMinute = startTime.getMinutes().toString().padStart(2, '0');
                             const endHour = endTime.getHours();
                             const endMinute = endTime.getMinutes().toString().padStart(2, '0');
 
                             // Comparar la hora actual con el rango de la actividad
+                            const currentHour = now.getHours();
+                            const currentMinute = now.getMinutes();
+
                             if ((currentHour > startHour || (currentHour === startHour && currentMinute >= startMinute)) &&
                                 (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute))) {
                                 document.getElementById('activity-title').innerText = title;
@@ -138,3 +160,4 @@
     </script>
 </body>
 </html>
+
