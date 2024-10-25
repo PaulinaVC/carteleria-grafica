@@ -129,6 +129,28 @@
                                 console.error('Fecha inválida:', error);
                                 return;
                             }
+                            // Obtener la hora y los minutos actuales//
+                            const currentHour = now.getHours();
+                            const currentMinute = now.getMinutes();
+                            
+                            // Convertir la hora de inicio y fin a valores comparables//
+                            const eventStartHour = startTime.getHours();
+                            const eventStartMinute = startTime.getMinutes();
+                            const eventEndHour = endTime.getHours();
+                            const eventEndMinute = endTime.getMinutes();
+                            
+                            // Comparar la hora actual con el rango de la actividad//
+                            if ((currentHour > eventStartHour || (currentHour === eventStartHour && currentMinute >= eventStartMinute)) &&
+                                (currentHour < eventEndHour || (currentHour === eventEndHour && currentMinute < eventEndMinute))) {
+                            
+                                // Mostrar detalles del evento si está ocurriendo en este momento//
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${eventStartHour}:${eventStartMinute.toString().padStart(2, '0')} - ${eventEndHour}:${eventEndMinute.toString().padStart(2, '0')}`;
+                                foundActivity = true;
+                            } else {
+                                console.log("El evento no está ocurriendo en este momento.");
+                            }
 
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
