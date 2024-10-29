@@ -1,40 +1,143 @@
-data.slice(1).forEach(row => {
-    const title = row[0];
-    const description = row[1];
-    
-    // Validar si las columnas de hora de inicio y fin existen y están en el formato esperado
-    let startTimeStr, endTimeStr;
-    if (row[2] && row[2].includes('T')) {
-        startTimeStr = row[2].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
-    } else {
-        console.warn(`Hora de inicio no válida para el evento: ${title}`);
-        return;  // Saltar esta fila si no tiene el formato correcto
-    }
-    if (row[3] && row[3].includes('T')) {
-        endTimeStr = row[3].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
-    } else {
-        console.warn(`Hora de fin no válida para el evento: ${title}`);
-        return;  // Saltar esta fila si no tiene el formato correcto
-    }
-
-    const room = row[4];
-    const eventDateStr = row[5] ? new Date(row[5]).toISOString().split('T')[0] : null;  // Validar fecha
-    const imageUrl = row[6];
-
-    console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
-
-    // Validar sala, fecha y hora
-    if (room === sala && eventDateStr === today && currentTime >= startTimeStr && currentTime <= endTimeStr) {
-        if (imageUrl && imageUrl.trim() !== "") {
-            const container = document.getElementById('activity-container');
-            container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
-            console.log("Mostrando imagen:", imageUrl);
-        } else {
-            document.getElementById('activity-title').innerText = title;
-            document.getElementById('activity-description').innerText = description;
-            document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
-            console.log("Mostrando información del evento:", title);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyección de Actividad</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-image 1s ease-in-out;
         }
-        foundActivity = true;
-    }
-});
+        .text-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 50px;
+            border-radius: 20px;
+            width: 80%;
+        }
+        h1, p {
+            margin: 0;
+            padding: 10px 0;
+        }
+        h1 {
+            font-size: 10em;
+            color: #333;
+        }
+        p {
+            font-size: 5em;
+            color: #666;
+        }
+        .activity-image {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-container" id="activity-container">
+        <h1 id="activity-title">Cargando...</h1>
+        <p id="activity-description">Cargando descripción...</p>
+        <p id="activity-time">Cargando horario...</p>
+    </div>
+
+    <script>
+        // Obtener el parámetro 'sala' de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        console.log("Sala seleccionada:", sala);
+
+        // URL del Google Apps Script que devuelve JSON
+        const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
+
+        // Array de imágenes de fondo
+        const backgrounds = [
+            'background-image1.jpg',  
+            'background-image2.jpg',
+            'background-image3.jpg'
+        ];
+        let currentBackgroundIndex = 0;
+
+        // Función para cambiar el fondo cada 10 segundos
+        function changeBackground() {
+            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+        }
+        setInterval(changeBackground, 10000);
+
+        function fetchData() {
+            console.log("Iniciando fetch de datos...");
+            fetch(jsonURL)
+                .then(response => response.json())
+                .then(data => {
+                    const now = new Date();
+                    const today = now.toISOString().split('T')[0];
+                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                    let foundActivity = false;
+
+                    console.log("Fecha actual:", today);
+                    console.log("Hora actual:", currentTime);
+                    console.log("Datos recibidos:", data);
+
+                    data.slice(1).forEach(row => {
+                        const title = row[0];
+                        const description = row[1];
+                        const startTimeStr = row[2].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
+                        const endTimeStr = row[3].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
+                        const room = row[4];
+                        const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir a YYYY-MM-DD
+                        const imageUrl = row[6];
+
+                        console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
+
+                        // Validar sala, fecha y hora
+                        if (room === sala && eventDateStr === today && currentTime >= startTimeStr && currentTime <= endTimeStr) {
+                            if (imageUrl && imageUrl.trim() !== "") {
+                                const container = document.getElementById('activity-container');
+                                container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                console.log("Mostrando imagen:", imageUrl);
+                            } else {
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                console.log("Mostrando información del evento:", title);
+                            }
+                            foundActivity = true;
+                        }
+                    });
+
+                    if (!foundActivity) {
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                        console.log("No se encontró ninguna actividad para mostrar.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-time').innerText = '';
+                });
+        }
+
+        // Llamar a fetchData al cargar la página
+        fetchData();
+
+        // Cambiar el fondo de inmediato
+        changeBackground();
+
+        // Actualizar la información cada 30 segundos
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>
