@@ -91,8 +91,8 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
-                        const startTimeStr = row[2].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
-                        const endTimeStr = row[3].split('T')[1].substring(0, 5);  // Extraer solo HH:MM
+                        const startTimeStr = row[2] ? row[2].substring(11, 16) : null;  // Extraer solo HH:MM desde el formato de hora completa
+                        const endTimeStr = row[3] ? row[3].substring(11, 16) : null;    // Extraer solo HH:MM desde el formato de hora completa
                         const room = row[4];
                         const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir a YYYY-MM-DD
                         const imageUrl = row[6];
@@ -141,4 +141,3 @@
     </script>
 </body>
 </html>
-
