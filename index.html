@@ -85,6 +85,9 @@
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
+        // Días de la semana en español
+        const diasSemana = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
         function fetchData() {
             console.time('Fetching JSON');
             fetch(jsonURL)
@@ -97,13 +100,13 @@
                 .then(data => {
                     console.timeEnd('Fetching JSON');
 
-                    // Asegúrate de que los datos tengan el formato adecuado
                     if (!Array.isArray(data) || data.length < 1 || !Array.isArray(data[0])) {
                         throw new Error("El formato de los datos es incorrecto.");
                     }
 
                     const now = new Date();
-                    const today = now.toISOString().split('T')[0]; 
+                    const todayDate = now.toISOString().split('T')[0]; 
+                    const todayDayOfWeek = diasSemana[now.getDay()]; // Día de la semana actual en texto
 
                     let foundActivity = false;
 
@@ -114,13 +117,15 @@
                         const endTimeStr = row[3];      
                         const room = row[4];            
                         const eventDateStr = row[5];    
-                        const imageUrl = row[6];        
+                        const eventDayOfWeek = row[6]?.toLowerCase();  // Día de la semana del evento en texto
+                        const imageUrl = row[7];        
 
-                        if (!room || !eventDateStr) return;
+                        if (!room || !eventDateStr || !eventDayOfWeek) return;
 
                         const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
 
-                        if (room === sala && eventDate === today) {
+                        // Verificar si la sala, la fecha y el día coinciden
+                        if (room === sala && eventDate === todayDate && eventDayOfWeek === todayDayOfWeek) {
                             let startTime, endTime;
                             try {
                                 startTime = new Date(startTimeStr);
