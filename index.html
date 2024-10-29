@@ -18,28 +18,56 @@
             transition: background-image 1s ease-in-out;
         }
         .text-container {
-            text-align: center;
             background-color: rgba(0, 0, 82, 0.7);
             width: 100vw; /* ancho total */
             height: 100vh; /* altura total *//
             display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* cambiar según posición deseada */
+            align-items: center; /* cambiar según posición deseada */
             justify-content: center;
-            padding-left: 20px; /* opcional: espacio desde el borde */
         }
         
-        h1, p {
-            margin: 0;
-            padding: 10px 0;
+        /* Contenedor para organizar el texto */
+        .text-content {
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 50px; /* Espacio desde el borde izquierdo */
+            gap: 20px; /* Espacio entre los elementos */
         }
+        /* Estilo de la etiqueta "Charla" */
+        .label {
+            background-color: #4b4bff; /* Color de fondo azul oscuro */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.5em;
+            display: inline-block;
+        }
+        
+       
         h1 {
             font-size: 10em;
             color: white;
         }
-        p {
-            font-size: 5em;
-            color: lightgray;
+
+        /* Estilo para detalles adicionales */
+        .details {
+            font-size: 1.5em;
+            line-height: 1.2em;
+        }
+
+        /* Estilo para la fecha */
+        .date {
+            font-size: 1.5em;
+            font-weight: normal;
+        }
+
+        /* Estilo para la ubicación */
+        .location {
+            font-size: 1.2em;
+            font-weight: normal;
         }
         
     </style>
