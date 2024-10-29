@@ -36,12 +36,6 @@
             font-size: 5em;
             color: #666;
         }
-        .activity-image {
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -68,7 +62,7 @@
 
         // Función para cambiar el fondo dinámico
         function startBackgroundRotation() {
-            if (backgroundInterval) clearInterval(backgroundInterval); // Limpia intervalos previos si existen
+            if (backgroundInterval) clearInterval(backgroundInterval); 
             changeBackground();
             backgroundInterval = setInterval(changeBackground, 10000);
         }
@@ -120,12 +114,12 @@
                                     document.getElementById('activity-container').style.display = 'none';
                                     console.log("Mostrando solo la imagen completa:", imageUrl);
                                 } else {
-                                    // Reiniciar fondo rotativo y mostrar contenedor de texto
+                                    // Mostrar contenedor de texto y reiniciar fondo dinámico
                                     document.getElementById('activity-container').style.display = 'block';
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
-                                    startBackgroundRotation(); // Reiniciar fondo rotativo
+                                    startBackgroundRotation();
                                     console.log("Mostrando información del evento:", title);
                                 }
                                 foundActivity = true;
@@ -138,7 +132,7 @@
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'block';
-                        startBackgroundRotation(); // Reiniciar fondo rotativo si no hay actividad
+                        startBackgroundRotation();
                         console.log("No se encontró ninguna actividad para mostrar.");
                     }
                 })
@@ -147,14 +141,13 @@
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
-                    startBackgroundRotation(); // Reiniciar fondo rotativo en caso de error
+                    startBackgroundRotation();
                 });
         }
 
         fetchData();
-        startBackgroundRotation(); // Iniciar el fondo dinámico al cargar la página
+        startBackgroundRotation();
         setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
-
