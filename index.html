@@ -59,7 +59,7 @@
         .date-time {
             font-size: 2.5em; /* Ajuste del tamaño */
             font-weight: normal;
-            color: lightgray;
+            color: white;
             margin: 0;
         }
     </style>
@@ -120,7 +120,7 @@
             const day = date.getDate();
             const monthName = getMonthName(date.getMonth());
             const [hour, minute] = timeStr.split(':');
-            return `${dayName} ${day} de ${monthName} - ${hour}:${minute} horas`;
+            return `${dayName} ${day} de ${monthName} • ${hour}:${minute} horas`;
         }
 
         function parseTimeStringToDate(timeStr) {
