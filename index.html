@@ -9,6 +9,8 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+            background-size: cover;
+            background-position: center;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -56,6 +58,26 @@
 
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
+        const backgrounds = [
+            'background-image1.jpg',  
+            'background-image2.jpg',
+            'background-image3.jpg'
+        ];
+        let currentBackgroundIndex = 0;
+        let backgroundInterval;
+
+        // Función para cambiar el fondo dinámico
+        function startBackgroundRotation() {
+            if (backgroundInterval) clearInterval(backgroundInterval); // Limpia intervalos previos si existen
+            changeBackground();
+            backgroundInterval = setInterval(changeBackground, 10000);
+        }
+
+        function changeBackground() {
+            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+        }
+
         function parseTimeStringToDate(timeStr) {
             const [hours, minutes] = timeStr.split(':').map(Number);
             const now = new Date();
@@ -92,15 +114,18 @@
 
                             if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
-                                    // Eliminar fondo dinámico e imagen completa
+                                    // Detener fondo rotativo y mostrar solo la imagen completa
+                                    clearInterval(backgroundInterval);
                                     document.body.style.backgroundImage = `url('${imageUrl}')`;
-                                    document.getElementById('activity-container').style.display = 'none';  // Ocultar contenedor de texto
+                                    document.getElementById('activity-container').style.display = 'none';
                                     console.log("Mostrando solo la imagen completa:", imageUrl);
                                 } else {
-                                    document.getElementById('activity-container').style.display = 'block';  // Mostrar contenedor de texto si no hay imagen
+                                    // Reiniciar fondo rotativo y mostrar contenedor de texto
+                                    document.getElementById('activity-container').style.display = 'block';
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                    startBackgroundRotation(); // Reiniciar fondo rotativo
                                     console.log("Mostrando información del evento:", title);
                                 }
                                 foundActivity = true;
@@ -113,6 +138,7 @@
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'block';
+                        startBackgroundRotation(); // Reiniciar fondo rotativo si no hay actividad
                         console.log("No se encontró ninguna actividad para mostrar.");
                     }
                 })
@@ -121,11 +147,14 @@
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
+                    startBackgroundRotation(); // Reiniciar fondo rotativo en caso de error
                 });
         }
 
         fetchData();
+        startBackgroundRotation(); // Iniciar el fondo dinámico al cargar la página
         setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
+
