@@ -9,8 +9,6 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-size: cover;
-            background-position: center;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -58,19 +56,6 @@
 
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
-        const backgrounds = [
-            'background-image1.jpg',  
-            'background-image2.jpg',
-            'background-image3.jpg'
-        ];
-        let currentBackgroundIndex = 0;
-
-        function changeBackground() {
-            document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
-            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
-        }
-        setInterval(changeBackground, 10000);
-
         function parseTimeStringToDate(timeStr) {
             const [hours, minutes] = timeStr.split(':').map(Number);
             const now = new Date();
@@ -107,12 +92,12 @@
 
                             if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
-                                    // Ocultar contenedor de texto y fondo
-                                    document.getElementById('activity-container').style.display = 'none';
+                                    // Eliminar fondo dinámico e imagen completa
                                     document.body.style.backgroundImage = `url('${imageUrl}')`;
-                                    console.log("Mostrando imagen completa:", imageUrl);
+                                    document.getElementById('activity-container').style.display = 'none';  // Ocultar contenedor de texto
+                                    console.log("Mostrando solo la imagen completa:", imageUrl);
                                 } else {
-                                    // Mostrar contenedor de texto cuando no hay imagen
+                                    document.getElementById('activity-container').style.display = 'block';  // Mostrar contenedor de texto si no hay imagen
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
@@ -127,6 +112,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').style.display = 'block';
                         console.log("No se encontró ninguna actividad para mostrar.");
                     }
                 })
@@ -139,10 +125,7 @@
         }
 
         fetchData();
-        changeBackground();
         setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
-
-
