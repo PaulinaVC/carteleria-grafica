@@ -14,7 +14,7 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             transition: background-image 1s ease-in-out;
         }
         
@@ -41,7 +41,7 @@
         
         /* Estilo del título */
         h1 {
-            font-size: 10em;
+            font-size: 5em; /* Ajuste del tamaño */
             font-weight: bold;
             margin: 0;
             color: white;
@@ -49,7 +49,7 @@
 
         /* Estilo de la descripción */
         .description {
-            font-size: 5em;
+            font-size: 3em; /* Ajuste del tamaño */
             font-weight: normal;
             margin: 0;
             color: white;
@@ -57,7 +57,7 @@
 
         /* Estilo de la fecha y hora */
         .date-time {
-            font-size: 5em;
+            font-size: 2.5em; /* Ajuste del tamaño */
             font-weight: normal;
             color: lightgray;
             margin: 0;
@@ -89,6 +89,7 @@
         let currentBackgroundIndex = 0;
         let backgroundInterval;
 
+        // Cambiar el fondo dinámico
         function startBackgroundRotation() {
             if (backgroundInterval) clearInterval(backgroundInterval); 
             changeBackground();
@@ -98,6 +99,28 @@
         function changeBackground() {
             document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+        }
+
+        // Función para obtener el nombre del día en español
+        function getDayName(dayIndex) {
+            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            return days[dayIndex];
+        }
+
+        // Función para obtener el nombre del mes en español
+        function getMonthName(monthIndex) {
+            const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            return months[monthIndex];
+        }
+
+        // Función para formatear la fecha y hora
+        function formatDateAndTime(dateStr, timeStr) {
+            const date = new Date(dateStr);
+            const dayName = getDayName(date.getDay());
+            const day = date.getDate();
+            const monthName = getMonthName(date.getMonth());
+            const [hour, minute] = timeStr.split(':');
+            return `${dayName} ${day} de ${monthName} - ${hour}:${minute}`;
         }
 
         function parseTimeStringToDate(timeStr) {
@@ -141,11 +164,11 @@
                                     document.getElementById('activity-container').style.display = 'none';
                                     console.log("Mostrando solo la imagen completa:", imageUrl);
                                 } else {
-                                    // Mostrar contenedor de texto y reiniciar fondo dinámico
+                                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
                                     document.getElementById('activity-container').style.display = 'flex';
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
-                                    document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                    document.getElementById('activity-time').innerText = formattedDateTime;
                                     startBackgroundRotation();
                                     console.log("Mostrando información del evento:", title);
                                 }
