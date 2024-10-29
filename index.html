@@ -92,9 +92,9 @@
                         const title = row[0];
                         const description = row[1];
                         
-                        // Extraer directamente el tiempo de inicio y fin sin conversión de fecha
-                        const startTimeStr = row[2] ? row[2].substring(11, 16) : null;  // Extraer solo HH:MM desde el formato de hora completa
-                        const endTimeStr = row[3] ? row[3].substring(11, 16) : null;    // Extraer solo HH:MM desde el formato de hora completa
+                        // Extraer directamente el tiempo de inicio y fin en formato HH:mm
+                        const startTimeStr = row[2];  // Hora de inicio como texto en formato HH:mm
+                        const endTimeStr = row[3];    // Hora de fin como texto en formato HH:mm
 
                         if (!startTimeStr || !endTimeStr) {
                             console.warn(`Hora de inicio o fin no válida para el evento: ${title}`);
@@ -102,7 +102,7 @@
                         }
 
                         const room = row[4];
-                        const eventDateStr = row[5] ? new Date(row[5]).toISOString().split('T')[0] : null;  // Validar fecha
+                        const eventDateStr = row[5];  // Fecha como texto en formato YYYY-MM-DD
                         const imageUrl = row[6];
 
                         console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
