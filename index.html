@@ -163,7 +163,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
-                        document.getElementById('activity-container').style.visibility = 'visible';
+                        document.getElementById('activity-container').style.display = 'block';
                         startBackgroundRotation();
                         console.log("No se encontró ninguna actividad para mostrar.");
                     }
@@ -173,7 +173,6 @@
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
-                    document.getElementById('activity-container').style.visibility = 'visible';
                     startBackgroundRotation();
                 });
         }
