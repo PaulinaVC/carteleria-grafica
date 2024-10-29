@@ -54,6 +54,7 @@
         // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        console.log("Sala seleccionada:", sala);
 
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
@@ -74,13 +75,18 @@
         setInterval(changeBackground, 10000);
 
         function fetchData() {
+            console.log("Iniciando fetch de datos...");
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
-                    const today = now.toISOString().split('T')[0];  // Fecha actual en formato YYYY-MM-DD
+                    const today = now.toISOString().split('T')[0];
                     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
                     let foundActivity = false;
+
+                    console.log("Fecha actual:", today);
+                    console.log("Hora actual:", currentTime);
+                    console.log("Datos recibidos:", data);
 
                     data.slice(1).forEach(row => {
                         const title = row[0];
@@ -91,17 +97,19 @@
                         const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir a YYYY-MM-DD
                         const imageUrl = row[6];
 
-                        // Validar sala y fecha
+                        console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
+
+                        // Validar sala, fecha y hora
                         if (room === sala && eventDateStr === today && currentTime >= startTimeStr && currentTime <= endTimeStr) {
                             if (imageUrl && imageUrl.trim() !== "") {
-                                // Mostrar solo la imagen si está disponible
                                 const container = document.getElementById('activity-container');
                                 container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                console.log("Mostrando imagen:", imageUrl);
                             } else {
-                                // Mostrar texto si no hay imagen
                                 document.getElementById('activity-title').innerText = title;
                                 document.getElementById('activity-description').innerText = description;
                                 document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                console.log("Mostrando información del evento:", title);
                             }
                             foundActivity = true;
                         }
@@ -111,6 +119,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
+                        console.log("No se encontró ninguna actividad para mostrar.");
                     }
                 })
                 .catch(error => {
