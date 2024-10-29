@@ -97,29 +97,61 @@
                 .then(data => {
                     console.timeEnd('Fetching JSON');
 
+                    // Asegúrate de que los datos tengan el formato adecuado
                     if (!Array.isArray(data) || data.length < 1 || !Array.isArray(data[0])) {
                         throw new Error("El formato de los datos es incorrecto.");
                     }
 
                     const now = new Date();
-                    const todayDate = now.toISOString().split('T')[0]; 
-                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                    const today = now.toISOString().split('T')[0]; 
 
                     let foundActivity = false;
 
                     data.slice(1).forEach(row => {
                         const title = row[0];           
                         const description = row[1];     
-                        const startTimeStr = row[2].split("T")[1].substring(0, 5);  // Extraer solo HH:MM de la hora de inicio
-                        const endTimeStr = row[3].split("T")[1].substring(0, 5);    // Extraer solo HH:MM de la hora de fin
+                        const startTimeStr = row[2];    
+                        const endTimeStr = row[3];      
                         const room = row[4];            
-                        const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir la fecha del evento
+                        const eventDateStr = row[5];    
                         const imageUrl = row[6];        
 
                         if (!room || !eventDateStr) return;
 
-                        // Verificar si la sala, la fecha y la hora coinciden
-                        if (room === sala && eventDateStr === todayDate && currentTime >= startTimeStr && currentTime <= endTimeStr) {
+                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
+
+                        if (room === sala && eventDate === today) {
+                            let startTime, endTime;
+                            try {
+                                startTime = new Date(startTimeStr);
+                                endTime = new Date(endTimeStr);
+                            } catch (error) {
+                                console.error('Fecha inválida:', error);
+                                return;
+                            }
+                            // Obtener la hora y los minutos actuales//
+                            const currentHour = now.getHours();
+                            const currentMinute = now.getMinutes();
+                            
+                            // Convertir la hora de inicio y fin a valores comparables//
+                            const eventStartHour = startTime.getHours();
+                            const eventStartMinute = startTime.getMinutes();
+                            const eventEndHour = endTime.getHours();
+                            const eventEndMinute = endTime.getMinutes();
+                            
+                            // Comparar la hora actual con el rango de la actividad//
+                            if ((currentHour > eventStartHour || (currentHour === eventStartHour && currentMinute >= eventStartMinute)) &&
+                                (currentHour < eventEndHour || (currentHour === eventEndHour && currentMinute < eventEndMinute))) {
+                            
+                                // Mostrar detalles del evento si está ocurriendo en este momento//
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${eventStartHour}:${eventStartMinute.toString().padStart(2, '0')} - ${eventEndHour}:${eventEndMinute.toString().padStart(2, '0')}`;
+                                foundActivity = true;
+                            } else {
+                                console.log("El evento no está ocurriendo en este momento.");
+                            }
+
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
                                 container.classList.add('hidden');  // Ocultar el cuadro blanco
@@ -129,9 +161,14 @@
                                     clearInterval(backgroundInterval);  
                                 }
                             } else {
+                                const startHour = startTime.getHours();
+                                const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                                const endHour = endTime.getHours();
+                                const endMinute = endTime.getMinutes().toString().padStart(2, '0');
+
                                 document.getElementById('activity-title').innerText = title;
                                 document.getElementById('activity-description').innerText = description;
-                                document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                                 foundActivity = true;
 
                                 document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro blanco si no hay imagen
