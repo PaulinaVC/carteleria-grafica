@@ -102,8 +102,10 @@
                         const eventDateStr = row[5];
                         const imageUrl = row[6];
 
-                        // Comparaciones de fecha y hora en consola
-                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
+                        // Verificación de formato de datos en consola
+                        console.log(`Evento: ${title}`);
+                        console.log(`Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
+                        console.log(`Comparando con: Sala: ${sala}, Fecha actual: ${today}, Hora actual: ${currentTime}`);
 
                         // Validar sala, fecha y hora
                         if (room === sala && eventDateStr === today && startTimeStr <= currentTime && currentTime <= endTimeStr) {
@@ -118,6 +120,8 @@
                                 console.log("Mostrando información del evento:", title);
                             }
                             foundActivity = true;
+                        } else {
+                            console.log(`Evento no coincide con los criterios actuales.`);
                         }
                     });
 
@@ -147,4 +151,3 @@
     </script>
 </body>
 </html>
-
