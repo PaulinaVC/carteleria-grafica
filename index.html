@@ -133,6 +133,16 @@
                                 document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
                                 foundActivity = true;
                             }
+                                    // Si hay una imagen asociada, mostrar solo la imagen
+                            if (imageUrl && imageUrl.trim() !== "") {
+                                const container = document.getElementById('activity-container');
+                                container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                            } else {
+                                // Si no hay imagen, mostrar el texto y cambiar el fondo
+                                const startHour = startTime.getHours();
+                                const startMinute = startTime.getMinutes().toString().padStart(2, '0');
+                                const endHour = endTime.getHours();
+                                const endMinute = endTime.getMinutes().toString().padStart(2, '0');
                         }
                     });
 
