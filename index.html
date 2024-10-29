@@ -81,7 +81,7 @@
                 .then(data => {
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  // Fecha actual en formato YYYY-MM-DD
-                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;  // Hora actual en formato HH:mm
                     let foundActivity = false;
 
                     console.log("Fecha actual:", today);
@@ -91,26 +91,17 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
-                        
-                        // Validación adicional para el tiempo de inicio y fin
                         const startTimeStr = row[2];
                         const endTimeStr = row[3];
-
-                        // Mostrar advertencia si faltan datos de tiempo
-                        if (!startTimeStr || !endTimeStr) {
-                            console.warn(`Hora de inicio o fin no válida para el evento: ${title}`);
-                            console.log(`Detalles del error: startTimeStr = ${startTimeStr}, endTimeStr = ${endTimeStr}`);
-                            return;  // Saltar esta fila si no tiene el formato correcto
-                        }
-
                         const room = row[4];
                         const eventDateStr = row[5];
                         const imageUrl = row[6];
 
-                        console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
+                        // Comparaciones de fecha y hora en consola
+                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
                         // Validar sala, fecha y hora
-                        if (room === sala && eventDateStr === today && currentTime >= startTimeStr && currentTime <= endTimeStr) {
+                        if (room === sala && eventDateStr === today && startTimeStr <= currentTime && currentTime <= endTimeStr) {
                             if (imageUrl && imageUrl.trim() !== "") {
                                 const container = document.getElementById('activity-container');
                                 container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
