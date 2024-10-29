@@ -24,7 +24,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* Centra el texto verticalmente */
             align-items: flex-start;
             padding-left: 50px; /* Margen izquierdo */
         }
@@ -36,9 +36,9 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center; /* Centra el texto verticalmente */
-            padding-left: 50px; /* Espacio desde el borde izquierdo */
             gap: 20px; /* Espacio entre los elementos */
         }
+        
         /* Estilo del título */
         h1 {
             font-size: 4em;
@@ -63,19 +63,16 @@
             margin: 0;
         }
     </style>
-        
 </head>
 <body>
     <div class="text-container" id="activity-container">
         <!-- Contenedor de texto organizado -->
         <div class="text-content">
             <h1 id="activity-title">Cargando...</h1>
-            <p id="activity-description">Cargando descripción...</p>
-            <p id="activity-time">Cargando horario...</p>
+            <p class="description" id="activity-description">Cargando descripción...</p>
+            <p class="date-time" id="activity-time">Cargando horario...</p>
         </div>
     </div>
-
-
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -92,7 +89,6 @@
         let currentBackgroundIndex = 0;
         let backgroundInterval;
 
-        // Función para cambiar el fondo dinámico
         function startBackgroundRotation() {
             if (backgroundInterval) clearInterval(backgroundInterval); 
             changeBackground();
@@ -140,14 +136,13 @@
 
                             if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
-                                    // Detener fondo rotativo y mostrar solo la imagen completa
                                     clearInterval(backgroundInterval);
                                     document.body.style.backgroundImage = `url('${imageUrl}')`;
                                     document.getElementById('activity-container').style.display = 'none';
                                     console.log("Mostrando solo la imagen completa:", imageUrl);
                                 } else {
                                     // Mostrar contenedor de texto y reiniciar fondo dinámico
-                                    document.getElementById('activity-container').style.display = 'block';
+                                    document.getElementById('activity-container').style.display = 'flex';
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
@@ -163,7 +158,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy.';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
-                        document.getElementById('activity-container').style.display = 'block';
+                        document.getElementById('activity-container').style.display = 'flex';
                         startBackgroundRotation();
                         console.log("No se encontró ninguna actividad para mostrar.");
                     }
