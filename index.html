@@ -85,9 +85,6 @@
         // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
-        // Días de la semana en español
-        const diasSemana = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-
         function fetchData() {
             console.time('Fetching JSON');
             fetch(jsonURL)
@@ -106,59 +103,39 @@
 
                     const now = new Date();
                     const todayDate = now.toISOString().split('T')[0]; 
-                    const todayDayOfWeek = diasSemana[now.getDay()]; // Día de la semana actual en texto
+                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
                     let foundActivity = false;
 
                     data.slice(1).forEach(row => {
                         const title = row[0];           
                         const description = row[1];     
-                        const startTimeStr = row[2];    
-                        const endTimeStr = row[3];      
+                        const startTimeStr = row[2].split("T")[1].substring(0, 5);  // Extraer solo HH:MM de la hora de inicio
+                        const endTimeStr = row[3].split("T")[1].substring(0, 5);    // Extraer solo HH:MM de la hora de fin
                         const room = row[4];            
-                        const eventDateStr = row[5];    
-                        const eventDayOfWeek = row[6]?.toLowerCase();  // Día de la semana del evento en texto
-                        const imageUrl = row[7];        
+                        const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir la fecha del evento
+                        const imageUrl = row[6];        
 
-                        if (!room || !eventDateStr || !eventDayOfWeek) return;
+                        if (!room || !eventDateStr) return;
 
-                        const eventDate = new Date(eventDateStr).toISOString().split('T')[0];
+                        // Verificar si la sala, la fecha y la hora coinciden
+                        if (room === sala && eventDateStr === todayDate && currentTime >= startTimeStr && currentTime <= endTimeStr) {
+                            if (imageUrl && imageUrl.trim() !== "") {
+                                const container = document.getElementById('activity-container');
+                                container.classList.add('hidden');  // Ocultar el cuadro blanco
+                                document.body.style.backgroundImage = `url('${imageUrl}')`; 
 
-                        // Verificar si la sala, la fecha y el día coinciden
-                        if (room === sala && eventDate === todayDate && eventDayOfWeek === todayDayOfWeek) {
-                            let startTime, endTime;
-                            try {
-                                startTime = new Date(startTimeStr);
-                                endTime = new Date(endTimeStr);
-                            } catch (error) {
-                                console.error('Fecha inválida:', error);
-                                return;
-                            }
-
-                            // Comparar la hora completa actual con la hora de inicio y fin
-                            if (now >= startTime && now <= endTime) {
-                                if (imageUrl && imageUrl.trim() !== "") {
-                                    const container = document.getElementById('activity-container');
-                                    container.classList.add('hidden');  // Ocultar el cuadro blanco
-                                    document.body.style.backgroundImage = `url('${imageUrl}')`; 
-
-                                    if (backgroundInterval) {
-                                        clearInterval(backgroundInterval);  
-                                    }
-                                } else {
-                                    const startHour = startTime.getHours();
-                                    const startMinute = startTime.getMinutes().toString().padStart(2, '0');
-                                    const endHour = endTime.getHours();
-                                    const endMinute = endTime.getMinutes().toString().padStart(2, '0');
-
-                                    document.getElementById('activity-title').innerText = title;
-                                    document.getElementById('activity-description').innerText = description;
-                                    document.getElementById('activity-time').innerText = `Horario: ${startHour}:${startMinute} - ${endHour}:${endMinute}`;
-                                    foundActivity = true;
-
-                                    document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro blanco si no hay imagen
-                                    startBackgroundRotation();  
+                                if (backgroundInterval) {
+                                    clearInterval(backgroundInterval);  
                                 }
+                            } else {
+                                document.getElementById('activity-title').innerText = title;
+                                document.getElementById('activity-description').innerText = description;
+                                document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                foundActivity = true;
+
+                                document.getElementById('activity-container').classList.remove('hidden');  // Mostrar el cuadro blanco si no hay imagen
+                                startBackgroundRotation();  
                             }
                         }
                     });
