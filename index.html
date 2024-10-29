@@ -51,15 +51,12 @@
     </div>
 
     <script>
-        // Obtener el parámetro 'sala' de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sala = urlParams.get('sala')?.trim() || 'Sala 1';  // Valor predeterminado 'Sala 1' si no se proporciona en la URL
+        const sala = urlParams.get('sala')?.trim() || 'Sala 1';
         console.log("Sala seleccionada:", sala);
 
-        // URL del Google Apps Script que devuelve JSON
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
 
-        // Array de imágenes de fondo
         const backgrounds = [
             'background-image1.jpg',  
             'background-image2.jpg',
@@ -67,16 +64,17 @@
         ];
         let currentBackgroundIndex = 0;
 
-        // Función para cambiar el fondo cada 10 segundos
         function changeBackground() {
             document.body.style.backgroundImage = `url('${backgrounds[currentBackgroundIndex]}')`;
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
         }
         setInterval(changeBackground, 10000);
 
-        // Función para limpiar espacios y normalizar el formato de tiempo
-        function cleanTimeString(timeStr) {
-            return timeStr ? timeStr.trim() : '';
+        function parseTimeStringToDate(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const now = new Date();
+            now.setHours(hours, minutes, 0, 0);
+            return now;
         }
 
         function fetchData() {
@@ -85,43 +83,39 @@
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
-                    const today = now.toISOString().split('T')[0];  // Fecha actual en formato YYYY-MM-DD
-                    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;  // Hora actual en formato HH:mm
+                    const today = now.toISOString().split('T')[0];  
                     let foundActivity = false;
 
                     console.log("Fecha actual:", today);
-                    console.log("Hora actual:", currentTime);
-                    console.log("Datos recibidos:", data);
+                    console.log("Hora actual:", now);
 
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
-                        const startTimeStr = cleanTimeString(row[2]);
-                        const endTimeStr = cleanTimeString(row[3]);
+                        const startTimeStr = row[2];
+                        const endTimeStr = row[3];
                         const room = row[4];
                         const eventDateStr = row[5];
                         const imageUrl = row[6];
 
-                        // Verificación de formato de datos en consola
-                        console.log(`Evento: ${title}`);
-                        console.log(`Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
-                        console.log(`Comparando con: Sala: ${sala}, Fecha actual: ${today}, Hora actual: ${currentTime}`);
+                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
-                        // Validar sala, fecha y hora
-                        if (room === sala && eventDateStr === today && startTimeStr <= currentTime && currentTime <= endTimeStr) {
-                            if (imageUrl && imageUrl.trim() !== "") {
-                                const container = document.getElementById('activity-container');
-                                container.innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
-                                console.log("Mostrando imagen:", imageUrl);
-                            } else {
-                                document.getElementById('activity-title').innerText = title;
-                                document.getElementById('activity-description').innerText = description;
-                                document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
-                                console.log("Mostrando información del evento:", title);
+                        if (room === sala && eventDateStr === today) {
+                            const startTime = parseTimeStringToDate(startTimeStr);
+                            const endTime = parseTimeStringToDate(endTimeStr);
+
+                            if (now >= startTime && now <= endTime) {
+                                if (imageUrl && imageUrl.trim() !== "") {
+                                    document.getElementById('activity-container').innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                    console.log("Mostrando imagen:", imageUrl);
+                                } else {
+                                    document.getElementById('activity-title').innerText = title;
+                                    document.getElementById('activity-description').innerText = description;
+                                    document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
+                                    console.log("Mostrando información del evento:", title);
+                                }
+                                foundActivity = true;
                             }
-                            foundActivity = true;
-                        } else {
-                            console.log(`Evento no coincide con los criterios actuales.`);
                         }
                     });
 
@@ -140,13 +134,8 @@
                 });
         }
 
-        // Llamar a fetchData al cargar la página
         fetchData();
-
-        // Cambiar el fondo de inmediato
         changeBackground();
-
-        // Actualizar la información cada 30 segundos
         setInterval(fetchData, 30000);
     </script>
 </body>
