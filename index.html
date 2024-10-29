@@ -17,7 +17,7 @@
             align-items: center;
             transition: background-image 1s ease-in-out;
         }
-        .text-container, .image-container {
+        .text-container {
             text-align: center;
             background-color: rgba(255, 255, 255, 0.7);
             padding: 50px;
@@ -107,10 +107,12 @@
 
                             if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
-                                    // Mostrar imagen en pantalla completa
-                                    document.getElementById('activity-container').innerHTML = `<img src="${imageUrl}" alt="Imagen de la actividad" class="activity-image">`;
+                                    // Ocultar contenedor de texto y fondo
+                                    document.getElementById('activity-container').style.display = 'none';
+                                    document.body.style.backgroundImage = `url('${imageUrl}')`;
                                     console.log("Mostrando imagen completa:", imageUrl);
                                 } else {
+                                    // Mostrar contenedor de texto cuando no hay imagen
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = `Horario: ${startTimeStr} - ${endTimeStr}`;
@@ -142,4 +144,5 @@
     </script>
 </body>
 </html>
+
 
