@@ -74,6 +74,11 @@
         }
         setInterval(changeBackground, 10000);
 
+        // Función para limpiar espacios y normalizar el formato de tiempo
+        function cleanTimeString(timeStr) {
+            return timeStr ? timeStr.trim() : '';
+        }
+
         function fetchData() {
             console.log("Iniciando fetch de datos...");
             fetch(jsonURL)
@@ -91,8 +96,8 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
-                        const startTimeStr = row[2];
-                        const endTimeStr = row[3];
+                        const startTimeStr = cleanTimeString(row[2]);
+                        const endTimeStr = cleanTimeString(row[3]);
                         const room = row[4];
                         const eventDateStr = row[5];
                         const imageUrl = row[6];
