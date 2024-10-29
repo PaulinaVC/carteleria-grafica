@@ -80,7 +80,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
-                    const today = now.toISOString().split('T')[0];
+                    const today = now.toISOString().split('T')[0];  // Fecha actual en formato YYYY-MM-DD
                     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
                     let foundActivity = false;
 
@@ -91,10 +91,18 @@
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
+                        
+                        // Extraer directamente el tiempo de inicio y fin sin conversión de fecha
                         const startTimeStr = row[2] ? row[2].substring(11, 16) : null;  // Extraer solo HH:MM desde el formato de hora completa
                         const endTimeStr = row[3] ? row[3].substring(11, 16) : null;    // Extraer solo HH:MM desde el formato de hora completa
+
+                        if (!startTimeStr || !endTimeStr) {
+                            console.warn(`Hora de inicio o fin no válida para el evento: ${title}`);
+                            return;  // Saltar esta fila si no tiene el formato correcto
+                        }
+
                         const room = row[4];
-                        const eventDateStr = new Date(row[5]).toISOString().split('T')[0];  // Convertir a YYYY-MM-DD
+                        const eventDateStr = row[5] ? new Date(row[5]).toISOString().split('T')[0] : null;  // Validar fecha
                         const imageUrl = row[6];
 
                         console.log(`Revisando evento: ${title}, Sala: ${room}, Fecha: ${eventDateStr}, Hora de inicio: ${startTimeStr}, Hora de fin: ${endTimeStr}`);
