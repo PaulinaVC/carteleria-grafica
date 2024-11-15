@@ -214,8 +214,7 @@
                                 // Reorganizamos el texto en el orden deseado
                                 upcomingActivities.push(`${title}, ${formattedDateTime}`);
                             }
-                        });
-                        
+                                               
                         // Limitar la cantidad de actividades a mostrar
                         upcomingActivities = upcomingActivities.slice(0, maxActivities);
                         if (upcomingActivities.length > 0) {
@@ -226,11 +225,11 @@
                         } else {
                             document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
                         }
-                    })
+                    }
                         .catch(error => {
                             console.error('Error fetching upcoming activities:', error);
                             document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
-                        });
+                        }));
         }
 
 
