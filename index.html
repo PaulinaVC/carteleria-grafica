@@ -221,12 +221,12 @@
                             .join('<span class="ticker-separator"> • </span>');
                         document.getElementById('ticker-text').innerHTML = tickerText;
                     } else {
-                        document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
+                        document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching upcoming activities:', error);
-                    document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
+                    document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades';
                 });
         }
 
