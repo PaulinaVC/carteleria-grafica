@@ -198,8 +198,11 @@
                 const startTimeStr = row[2];
                 const eventDateStr = row[5];
 
-                const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-                
+               // Filtrar solo actividades asociadas a la sala actual
+                if (room === sala) {
+                    const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+
+  
                 if (eventDateTime > now) {
                     const date = new Date(eventDateStr);
                     const day = date.getDate();
