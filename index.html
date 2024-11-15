@@ -185,12 +185,12 @@
             return now;
         }
         function fetchUpcomingActivities() {
-    fetch(jsonURL)
-        .then(response => response.json())
-        .then(data => {
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            let upcomingActivities = [];
+            fetch(jsonURL)
+                .then(response => response.json())
+                .then(data => {
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                let upcomingActivities = [];
 
             data.slice(1).forEach(row => {
                 const title = row[0];
@@ -214,6 +214,9 @@
                     upcomingActivities.push(`${title}, ${formattedDateTime}`);
                 }
             });
+            // Limitar la cantidad de actividades a mostrar
+            upcomingActivities = upcomingActivities.slice(0, maxActivities);
+
 
             if (upcomingActivities.length > 0) {
                 const tickerText = upcomingActivities
