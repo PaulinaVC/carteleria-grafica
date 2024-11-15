@@ -196,13 +196,16 @@
                     const formattedDateTime = `${day} de ${monthName} ${hour}:${minute} horas`;
 
                     // Reorganizamos el texto en el orden deseado
-                    upcomingActivities.push(`${title} - ${formattedDateTime}`);
+                    upcomingActivities.push(`${title} , ${formattedDateTime}`);
                 }
             });
 
             if (upcomingActivities.length > 0) {
-                const tickerText = upcomingActivities.join('   •   ');
-                document.getElementById('ticker-text').innerText = tickerText;
+                const tickerText = upcomingActivities
+                    .map(activity => `<span class="ticker-item">${activity}</span>`)
+                    .join('<span class="ticker-separator"> • </span>');
+                
+                document.getElementById('ticker-text').innerHTML = tickerText;
             } else {
                 document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
             }
