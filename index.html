@@ -62,6 +62,11 @@
             color: white;
             margin: 0;
         }
+        /* Estilo para el mensaje cuando no hay actividad programada */
+        .no-activity-message {
+            font-size: 5em; /* Ajusta este valor según el tamaño deseado */
+        }
+
     </style>
 </head>
 <body>
@@ -169,6 +174,9 @@
                                     document.getElementById('activity-title').innerText = title;
                                     document.getElementById('activity-description').innerText = description;
                                     document.getElementById('activity-time').innerText = formattedDateTime;
+                                    // Remueve la clase para restaurar el tamaño original
+                                    document.getElementById('activity-title').classList.remove('no-activity-message');
+
                                     startBackgroundRotation();
                                     console.log("Mostrando información del evento:", title);
                                 }
@@ -178,12 +186,16 @@
                     });
 
                     if (!foundActivity) {
-                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para hoy';
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'flex';
+
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
+                        
                         startBackgroundRotation();
-                        console.log("No se encontró ninguna actividad para mostrar.");
+                        console.log("No se encontró ninguna actividad para mostrar");
                     }
                 })
                 .catch(error => {
