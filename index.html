@@ -198,9 +198,9 @@
                 const startTimeStr = row[2];
                 const room = row[4];
                 const eventDateStr = row[5];
-
+                console.log("Room:", room?.trim(), "Sala:", sala);
                // Filtrar solo actividades asociadas a la sala actual
-                if (room === sala) {
+               if (room?.trim().toLowerCase() === sala.toLowerCase()) {
                     const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
 
   
