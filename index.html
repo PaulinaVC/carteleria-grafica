@@ -189,8 +189,14 @@
                 const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 
                 if (eventDateTime > now) {
-                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
-                    upcomingActivities.push(`${formattedDateTime}: ${title}`);
+                    const date = new Date(eventDateStr);
+                    const day = date.getDate();
+                    const monthName = getMonthName(date.getMonth());
+                    const [hour, minute] = startTimeStr.split(':');
+                    const formattedDateTime = `${day} de ${monthName} ${hour}:${minute} horas`;
+
+                    // Reorganizamos el texto en el orden deseado
+                    upcomingActivities.push(`${title} : ${formattedDateTime}`);
                 }
             });
 
