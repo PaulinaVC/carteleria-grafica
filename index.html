@@ -66,7 +66,39 @@
         .no-activity-message {
             font-size: 5em; /* Ajusta este valor según el tamaño deseado */
         }
+/* Estilos para la barra inferior tipo noticiero */
+.ticker-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 17, 70, 0.9); /* Fondo azul oscuro con transparencia */
+    overflow: hidden;
+    height: 50px; /* Ajusta la altura según tus necesidades */
+}
 
+.ticker {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+#ticker-text {
+    display: inline-block;
+    white-space: nowrap;
+    color: white;
+    font-size: 1.5em; /* Ajusta el tamaño de la fuente */
+    animation: ticker-move 20s linear infinite;
+    padding-left: 100%;
+}
+
+@keyframes ticker-move {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
     </style>
 </head>
 <body>
@@ -77,6 +109,12 @@
             <p class="description" id="activity-description">Cargando descripción...</p>
             <p class="date-time" id="activity-time">Cargando fecha...</p>
         </div>
+    </div>
+        <!-- Barra inferior tipo noticiero -->
+    <div class="ticker-container">
+        <div class="ticker">
+            <div id="ticker-text"></div>
+         </div>
     </div>
 
     <script>
@@ -134,6 +172,41 @@
             now.setHours(hours, minutes, 0, 0);
             return now;
         }
+        function fetchUpcomingActivities() {
+    fetch(jsonURL)
+        .then(response => response.json())
+        .then(data => {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            let upcomingActivities = [];
+
+            data.slice(1).forEach(row => {
+                const title = row[0];
+                const description = row[1];
+                const startTimeStr = row[2];
+                const eventDateStr = row[5];
+
+                const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+                
+                if (eventDateTime > now) {
+                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                    upcomingActivities.push(`${formattedDateTime}: ${title}`);
+                }
+            });
+
+            if (upcomingActivities.length > 0) {
+                const tickerText = upcomingActivities.join('   •   ');
+                document.getElementById('ticker-text').innerText = tickerText;
+            } else {
+                document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching upcoming activities:', error);
+            document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
+        });
+}
+
 
         function fetchData() {
             console.log("Iniciando fetch de datos...");
@@ -208,8 +281,10 @@
         }
 
         fetchData();
+        fetchUpcomingActivities();
         startBackgroundRotation();
         setInterval(fetchData, 30000);
+        setInterval(fetchUpcomingActivities, 60000);
     </script>
 </body>
 </html>
