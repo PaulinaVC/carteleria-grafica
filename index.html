@@ -185,6 +185,8 @@
             return now;
         }
         function fetchUpcomingActivities() {
+            const maxActivities = 5; // Número máximo de actividades a mostrar
+
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
@@ -211,6 +213,10 @@
                     upcomingActivities.push(`${title}, ${formattedDateTime}`);
                 }
             });
+            
+            // Limitar la cantidad de actividades a mostrar
+            upcomingActivities = upcomingActivities.slice(0, maxActivities);
+
 
             if (upcomingActivities.length > 0) {
                 const tickerText = upcomingActivities
