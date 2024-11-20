@@ -170,22 +170,23 @@
 
         // Función para formatear la fecha y hora
         function formatDateAndTime(dateStr, timeStr) {
-            const date = new Date(dateStr);
-            const dayName = getDayName(date.getDay());
-            const day = date.getDate();
-            const monthName = getMonthName(date.getMonth());
-            const [hour, minute] = timeStr.split(':');
-            return `${dayName} ${day} de ${monthName} • ${hour}:${minute} horas`;
-            console.log(formatDateAndTime);
-        }
+    const date = new Date(`${dateStr}T${timeStr}:00`); // Combina fecha y hora
+    const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' }); // Nombre del día
+    const day = date.getDate(); // Día del mes
+    const monthName = date.toLocaleDateString('es-ES', { month: 'long' }); // Nombre del mes
+    const hour = date.getHours().toString().padStart(2, '0'); // Hora ajustada localmente
+    const minute = date.getMinutes().toString().padStart(2, '0'); // Minuto ajustado localmente
+
+    return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${hour}:${minute} horas`;
+}
           
 
         function parseTimeStringToDate(timeStr) {
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            const now = new Date();
-            now.setHours(hours, minutes, 0, 0);
-            return now;
-        }
+    const now = new Date(); // Fecha actual para referencia
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    now.setHours(hours, minutes, 0, 0); // Ajusta la hora y los minutos en la fecha actual
+    return now;
+}
         function fetchUpcomingActivities() {
             fetch(jsonURL)
                 .then(response => response.json())
