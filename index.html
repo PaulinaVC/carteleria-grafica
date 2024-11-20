@@ -179,7 +179,7 @@
 
     return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${hour}:${minute} horas`;
 }
-          
+
 
         function parseTimeStringToDate(timeStr) {
     const now = new Date(); // Fecha actual para referencia
@@ -233,94 +233,81 @@
                     document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
                     document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades';
                 });
-}
-        
-            function fetchData() {
-    console.log("Iniciando fetch de datos...");
-    fetch(jsonURL)
-        .then(response => response.json())
-        .then(data => {
-            const now = new Date();
-            const today = now.toISOString().split('T')[0];
-            let foundActivity = false;
-            let nextEvent = null; // Para almacenar el próximo evento más cercano
+        }
 
-            console.log("Fecha actual:", today);
-            console.log("Hora actual:", now);
 
-            data.slice(1).forEach(row => {
-                const title = row[0];
-                const description = row[1];
-                const startTimeStr = row[2];
-                const endTimeStr = row[3];
-                const room = row[4];
-                const eventDateStr = row[5];
-                const imageUrl = row[6];
+        function fetchData() {
+            console.log("Iniciando fetch de datos...");
+            fetch(jsonURL)
+                .then(response => response.json())
+                .then(data => {
+                    const now = new Date();
+                    const today = now.toISOString().split('T')[0];  
+                    let foundActivity = false;
 
-                console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
+                    console.log("Fecha actual:", today);
+                    console.log("Hora actual:", now);
 
-                if (room === sala && eventDateStr === today) {
-                    const startTime = parseTimeStringToDate(startTimeStr);
-                    const endTime = parseTimeStringToDate(endTimeStr);
-                    const startTimeMinusThirty = new Date(startTime.getTime() - 30 * 60000); // 30 minutos antes del evento
+                    data.slice(1).forEach(row => {
+                        const title = row[0];
+                        const description = row[1];
+                        const startTimeStr = row[2];
+                        const endTimeStr = row[3];
+                        const room = row[4];
+                        const eventDateStr = row[5];
+                        const imageUrl = row[6];
 
-                    if (now >= startTime && now <= endTime) {
-                        // Mostrar evento activo
-                        if (imageUrl && imageUrl.trim() !== "") {
-                            clearInterval(backgroundInterval);
-                            document.body.style.backgroundImage = `url('${imageUrl}')`;
-                            document.getElementById('activity-container').style.display = 'none';
-                            console.log("Mostrando solo la imagen completa:", imageUrl);
-                        } else {
-                            const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
-                            document.getElementById('activity-container').style.display = 'flex';
-                            document.getElementById('activity-title').innerText = title;
-                            document.getElementById('activity-description').innerText = description;
-                            document.getElementById('activity-time').innerText = formattedDateTime;
-                            document.getElementById('activity-title').classList.remove('no-activity-message');
+                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
-                            startBackgroundRotation();
-                            console.log("Mostrando información del evento:", title);
+                        if (room === sala && eventDateStr === today) {
+                            const startTime = parseTimeStringToDate(startTimeStr);
+                            const endTime = parseTimeStringToDate(endTimeStr);
+
+                            if (now >= startTime && now <= endTime) {
+                                if (imageUrl && imageUrl.trim() !== "") {
+                                    clearInterval(backgroundInterval);
+                                    document.body.style.backgroundImage = `url('${imageUrl}')`;
+                                    document.getElementById('activity-container').style.display = 'none';
+                                    console.log("Mostrando solo la imagen completa:", imageUrl);
+                                } else {
+                                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                                    document.getElementById('activity-container').style.display = 'flex';
+                                    document.getElementById('activity-title').innerText = title;
+                                    document.getElementById('activity-description').innerText = description;
+                                    document.getElementById('activity-time').innerText = formattedDateTime;
+                                    // Remueve la clase para restaurar el tamaño original
+                                    document.getElementById('activity-title').classList.remove('no-activity-message');
+
+                                    startBackgroundRotation();
+                                    console.log("Mostrando información del evento:", title);
+                                }
+                                foundActivity = true;
+                            }
                         }
-                        foundActivity = true;
-                    } else if (now < startTime && (!nextEvent || startTime < nextEvent.startTime)) {
-                        // Almacenar el próximo evento más cercano
-                        nextEvent = { title, description, startTime, formattedDateTime: formatDateAndTime(eventDateStr, startTimeStr) };
+                    });
+
+                    if (!foundActivity) {
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').style.display = 'flex';
+
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
+
+                        startBackgroundRotation();
+                        console.log("No se encontró ninguna actividad para mostrar");
                     }
-                }
-            });
-
-            if (!foundActivity) {
-                if (nextEvent && now >= new Date(nextEvent.startTime.getTime() - 30 * 60000)) {
-                    // Mostrar información 30 minutos antes del próximo evento
-                    document.getElementById('activity-container').style.display = 'flex';
-                    document.getElementById('activity-title').innerText = `Próxima actividad: ${nextEvent.title}`;
-                    document.getElementById('activity-description').innerText = nextEvent.description;
-                    document.getElementById('activity-time').innerText = nextEvent.formattedDateTime;
-
-                    document.getElementById('activity-title').classList.remove('no-activity-message');
-                    startBackgroundRotation();
-                    console.log("Mostrando información 30 minutos antes del próximo evento:", nextEvent.title);
-                } else {
-                    // No hay actividad programada para este horario
-                    document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
-                    document.getElementById('activity-description').innerText = '';
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
-                    document.getElementById('activity-container').style.display = 'flex';
-
-                    document.getElementById('activity-title').classList.add('no-activity-message');
                     startBackgroundRotation();
-                    console.log("No se encontró ninguna actividad para mostrar");
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            document.getElementById('activity-title').innerText = 'Error al cargar la información.';
-            document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
-            document.getElementById('activity-time').innerText = '';
-            startBackgroundRotation();
-        });
+                });
+        }
+
         fetchData();
         fetchUpcomingActivities();
         startBackgroundRotation();
