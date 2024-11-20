@@ -262,7 +262,7 @@
                         if (room === sala && eventDateStr === today) {
                             const startTime = parseTimeStringToDate(startTimeStr);
                             const endTime = parseTimeStringToDate(endTimeStr);
-                            const startTimeMinusFive = new Date(startTime.getTime() - 5 * 60000); // 5 minutos antes
+                            const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
 
                             if (now >= startTimeMinusFive && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
