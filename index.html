@@ -196,26 +196,22 @@
                     let upcomingActivities = [];
 
                     data.slice(1).forEach(row => {
-                        const title = row[0];
-                        const description = row[1];
-                        const startTimeStr = row[2];
-                        const room = row[4];
-                        const eventDateStr = row[5];
+    const title = row[0];
+    const startTimeStr = row[2];
+    const endTimeStr = row[3];
+    const room = row[4];
+    const eventDateStr = row[5];
 
-                        console.log("Room:", room?.trim(), "Sala:", sala);
+    const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+    const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
 
-                        // Filtrar solo actividades asociadas a la sala actual
-                        if (room?.trim().toLowerCase() === sala.toLowerCase()) {
-                            const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-                            if (eventDateTime > now) {
-                                const date = new Date(eventDateStr);
-                                const day = date.getDate();
-                                const monthName = getMonthName(date.getMonth());
-                                const [hour, minute] = startTimeStr.split(':');
-                                upcomingActivities.push(`${title}, ${day} de ${monthName} ${hour}:${minute} horas`);
-                            }
-                        }
-                    });
+    // Excluir actividad actual de la barra
+    if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
+        if (now < eventStartTime) {
+            upcomingActivities.push(`${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`);
+        }
+    }
+});
                     // Limitar la cantidad de actividades a mostrar
                     upcomingActivities = upcomingActivities.slice(0, maxActivities);
                     if (upcomingActivities.length > 0) {
@@ -259,12 +255,11 @@
 
                         console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
-                        if (room === sala && eventDateStr === today) {
-                            const startTime = parseTimeStringToDate(startTimeStr);
-                            const endTime = parseTimeStringToDate(endTimeStr);
-                            const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
+                       if (room === sala && eventDateStr === today) {
+    const startTime = parseTimeStringToDate(startTimeStr);
+    const endTime = parseTimeStringToDate(endTimeStr);
 
-                            if (now >= startTimeMinusFive && now <= endTime) {
+    if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
                                     clearInterval(backgroundInterval);
                                     document.body.style.backgroundImage = `url('${imageUrl}')`;
@@ -312,8 +307,8 @@
         fetchData();
         fetchUpcomingActivities();
         startBackgroundRotation();
-       // setInterval(fetchData, 30000);
-       // setInterval(fetchUpcomingActivities, 60000);
+        setInterval(fetchData, 30000);
+        setInterval(fetchUpcomingActivities, 60000);
         setInterval(() => {
             location.reload();
         }, 60000); // 60 segundos
