@@ -291,7 +291,10 @@
 
                             // Mostrar información 30 minutos antes del próximo evento
                             document.getElementById('activity-container').style.display = 'flex';
-                            document.getElementById('activity-title').innerText = `Próxima actividad: ${nextEvent.title}`;
+                            document.getElementById('activity-title').innerHTML = `
+                            <span style="font-weight: bold; font-size: 1.5em; display: block;">Próxima actividad:</span>
+                            <span style="font-size: 2.5em;">${nextEvent.title}</span>
+                            `;
                             document.getElementById('activity-description').innerText = nextEvent.description;
                             document.getElementById('activity-time').innerText = nextEvent.formattedDateTime;
                             
