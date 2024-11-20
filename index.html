@@ -17,7 +17,7 @@
             align-items: flex-start;
             transition: background-image 1s ease-in-out;
         }
-        
+
         .text-container {
             background-color: rgba(0, 17, 70, 0.7); /* Azul con transparencia */
             width: 100vw;
@@ -38,7 +38,7 @@
             justify-content: center; /* Centra el texto verticalmente */
             gap: 20px; /* Espacio entre los elementos */
         }
-        
+
         /* Estilo del título */
         h1 {
             font-size: 10em; /* Ajuste del tamaño */
@@ -191,16 +191,16 @@
                     const now = new Date();
                     const todayStr = now.toISOString().split('T')[0];
                     let upcomingActivities = [];
-                    
+
                     data.slice(1).forEach(row => {
                         const title = row[0];
                         const description = row[1];
                         const startTimeStr = row[2];
                         const room = row[4];
                         const eventDateStr = row[5];
-                        
+
                         console.log("Room:", room?.trim(), "Sala:", sala);
-                        
+
                         // Filtrar solo actividades asociadas a la sala actual
                         if (room?.trim().toLowerCase() === sala.toLowerCase()) {
                             const eventDateTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
@@ -221,11 +221,13 @@
                             .join('<span class="ticker-separator"> • </span>');
                         document.getElementById('ticker-text').innerHTML = tickerText;
                     } else {
+                        document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
                         document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching upcoming activities:', error);
+                    document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
                     document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades';
                 });
         }
@@ -239,7 +241,6 @@
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  
                     let foundActivity = false;
-                    let nextEvent = null; // Para almacenar el próximo evento más cercano
 
                     console.log("Fecha actual:", today);
                     console.log("Hora actual:", now);
@@ -258,7 +259,6 @@
                         if (room === sala && eventDateStr === today) {
                             const startTime = parseTimeStringToDate(startTimeStr);
                             const endTime = parseTimeStringToDate(endTimeStr);
-                            const startTimeMinusThirty = new Date(startTime.getTime() - 30 * 60000); // 5 minutos antes
 
                             if (now >= startTime && now <= endTime) {
                                 if (imageUrl && imageUrl.trim() !== "") {
@@ -279,36 +279,21 @@
                                     console.log("Mostrando información del evento:", title);
                                 }
                                 foundActivity = true;
-                            } else if (now < startTime && (!nextEvent || startTime < nextEvent.startTime)) { 
-                                // Almacenar el próximo evento más cercano
-                                nextEvent = { title, description, startTime, formattedDateTime: formatDateAndTime(eventDateStr, startTimeStr) };
                             }
                         }
                     });
 
                     if (!foundActivity) {
-                        if (nextEvent && now >= new Date(nextEvent.startTime.getTime() - 30 * 60000)) {
+                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').style.display = 'flex';
 
-                            // Mostrar información 30 minutos antes del próximo evento
-                            document.getElementById('activity-container').style.display = 'flex';
-                            document.getElementById('activity-title').innerText = `${nextEvent.title}`;
-                            document.getElementById('activity-description').innerText = nextEvent.description;
-                            document.getElementById('activity-time').innerText = nextEvent.formattedDateTime;
-                            
-                            document.getElementById('activity-title').classList.remove('no-activity-message');
-                            startBackgroundRotation();
-                            console.log("Mostrando información 30 minutos antes del próximo evento:", nextEvent.title);
-                        } else {
-                            // No hay actividad programada para este horario
-                            document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
-                            document.getElementById('activity-description').innerText = '';
-                            document.getElementById('activity-time').innerText = '';
-                            document.getElementById('activity-container').style.display = 'flex';
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
 
-                            document.getElementById('activity-title').classList.add('no-activity-message');
-                            startBackgroundRotation();
-                            console.log("No se encontró ninguna actividad para mostrar");
-                        }
+                        startBackgroundRotation();
+                        console.log("No se encontró ninguna actividad para mostrar");
                     }
                 })
                 .catch(error => {
