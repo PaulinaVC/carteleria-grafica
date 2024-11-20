@@ -176,7 +176,9 @@
             const monthName = getMonthName(date.getMonth());
             const [hour, minute] = timeStr.split(':');
             return `${dayName} ${day} de ${monthName} • ${hour}:${minute} horas`;
+            console.log(formatDateAndTime);
         }
+          
 
         function parseTimeStringToDate(timeStr) {
             const [hours, minutes] = timeStr.split(':').map(Number);
