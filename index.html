@@ -170,15 +170,24 @@
 
         // Función para formatear la fecha y hora
         function formatDateAndTime(dateStr, timeStr) {
-    const date = new Date(`${dateStr}T${timeStr}:00`); // Combina fecha y hora
-    const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' }); // Nombre del día
-    const day = date.getDate(); // Día del mes
-    const monthName = date.toLocaleDateString('es-ES', { month: 'long' }); // Nombre del mes
-    const hour = date.getHours().toString().padStart(2, '0'); // Hora ajustada localmente
-    const minute = date.getMinutes().toString().padStart(2, '0'); // Minuto ajustado localmente
-
-    return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${hour}:${minute} horas`;
-}
+             // Descomponer la fecha en componentes
+        const [year, month, day] = dateStr.split('-').map(Number); // Convertir a números
+        const [hour, minute] = timeStr.split(':').map(Number);
+            // Crear el objeto Date de manera explícita
+        const date = new Date(Date.UTC(year, month - 1, day, hour, minute));
+         // Validar si el objeto Date es válido
+            if (isNaN(date.getTime())) {
+                console.error('Fecha inválida:', { dateStr, timeStr });
+                return 'Fecha inválida';
+            }
+    // Formatear la salida
+        const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
+        const monthName = date.toLocaleDateString('es-ES', { month: 'long' });
+        const formattedHour = date.getHours().toString().padStart(2, '0');
+        const formattedMinute = date.getMinutes().toString().padStart(2, '0');
+    
+        return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${formattedHour}:${formattedMinute} horas`;
+    }
 
 
         function parseTimeStringToDate(timeStr) {
