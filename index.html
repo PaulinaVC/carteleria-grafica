@@ -234,7 +234,6 @@
 
         function fetchData() {
             console.log("Iniciando fetch de datos...");
-            console.log('Fila de datos:', row);
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
