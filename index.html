@@ -24,122 +24,129 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* Centra el texto verticalmente */
             align-items: flex-start;
-            padding-left: 50px;
+            padding-left: 50px; /* Margen izquierdo */
         }
 
+        /* Contenedor para organizar el texto */
         .text-content {
             color: white;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
-            gap: 20px;
+            justify-content: center; /* Centra el texto verticalmente */
+            gap: 20px; /* Espacio entre los elementos */
         }
 
+        /* Estilo del título */
         h1 {
-            font-size: 8em;
+            font-size: 8em; /* Ajuste del tamaño */
             font-weight: bold;
             margin: 0;
             color: white;
         }
 
+        /* Estilo de la descripción */
         .description {
-            font-size: 4em;
+            font-size: 4em; /* Ajuste del tamaño */
             font-weight: normal;
             margin: 0;
             color: white;
         }
 
+        /* Estilo de la fecha y hora */
         .date-time {
-            font-size: 4em;
+            font-size: 4em; /* Ajuste del tamaño */
             font-weight: normal;
             color: white;
             margin: 0;
         }
-
+        /* Estilo para el mensaje cuando no hay actividad programada */
         .no-activity-message {
-            font-size: 5em;
+            font-size: 4em; /* Ajusta este valor según el tamaño deseado */
         }
+/* Estilos para la barra inferior tipo noticiero */
+.ticker-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 17, 70, 0.9); /* Fondo azul oscuro con transparencia */
+    overflow: hidden;
+    height: 50px; /* Ajusta la altura según tus necesidades */
+}
 
-        .ticker-container {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: rgba(0, 17, 70, 0.9);
-            overflow: hidden;
-            height: 50px;
-        }
+.ticker {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
 
-        .ticker {
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-
-        #ticker-text {
-            display: inline-block;
-            white-space: nowrap;
-            color: white;
-            font-size: 1.5em;
-            animation: ticker-move 20s linear infinite;
-            padding-left: 100%;
-        }
+#ticker-text {
+    display: inline-block;
+    white-space: nowrap;
+    color: white;
+    font-size: 1.5em; /* Ajusta el tamaño de la fuente */
+    animation: ticker-move 20s linear infinite;
+    padding-left: 100%;
+}
 
         .ticker-item {
-            display: inline-block;
-            padding: 0 30px;
-        }
+    display: inline-block;
+    padding: 0 30px; /* Ajusta el espacio entre elementos */
+}
 
-        .ticker-separator {
-            display: inline-block;
-            padding: 0 40px;
-            color: lightgray;
-            font-size: 1.2em;
-        }
+.ticker-separator {
+    display: inline-block;
+    padding: 0 40px; /* Espacio alrededor del separador */
+    color: lightgray; /* Color del separador */
+    font-size: 1.2em; /* Tamaño del separador */
+}
 
-        @keyframes ticker-move {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-100%); }
-        }
+@keyframes ticker-move {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
     </style>
 </head>
 <body>
     <div class="text-container" id="activity-container">
+        <!-- Contenedor de texto organizado -->
         <div class="text-content">
             <h1 id="activity-title">Cargando...</h1>
             <p class="description" id="activity-description">Cargando descripción...</p>
             <p class="date-time" id="activity-time">Cargando fecha...</p>
         </div>
     </div>
-
+        <!-- Barra inferior tipo noticiero -->
     <div class="ticker-container">
         <div class="ticker">
             <div id="ticker-text"></div>
-        </div>
+         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.3.0/luxon.min.js"></script>
     <script>
-        const { DateTime } = luxon;
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';
         console.log("Sala seleccionada:", sala);
 
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
         const maxActivities = 5;
-
         const backgrounds = [
-            'background-image1.jpg',
+            'background-image1.jpg',  
             'background-image2.jpg',
             'background-image3.jpg'
         ];
         let currentBackgroundIndex = 0;
         let backgroundInterval;
 
+        // Cambiar el fondo dinámico
         function startBackgroundRotation() {
-            if (backgroundInterval) clearInterval(backgroundInterval);
+            if (backgroundInterval) clearInterval(backgroundInterval); 
             changeBackground();
             backgroundInterval = setInterval(changeBackground, 10000);
         }
@@ -149,45 +156,72 @@
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
         }
 
-       function formatDateAndTime(dateStr, timeStr) {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const [hour, minute] = timeStr.split(':').map(Number);
+        // Función para obtener el nombre del día en español
+        function getDayName(dayIndex) {
+            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            return days[dayIndex];
+        }
 
-    const date = new Date(Date.UTC(year, month - 1, day, hour, minute));
-    const options = { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Santiago' };
+        // Función para obtener el nombre del mes en español
+        function getMonthName(monthIndex) {
+            const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            return months[monthIndex];
+        }
 
-    const formattedDate = date.toLocaleDateString('es-ES', options);
-    const [weekday, datePart, timePart] = formattedDate.split(',');
-    return `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${datePart.trim()} • ${timePart.trim()} horas`;
-}
-
+        // Función para formatear la fecha y hora
+        function formatDateAndTime(dateStr, timeStr) {
+             // Descomponer la fecha en componentes
+        const [year, month, day] = dateStr.split('-').map(Number); // Convertir a números
+        const [hour, minute] = timeStr.split(':').map(Number);
+            // Crear el objeto Date de manera explícita
+        const date = new Date(Date.UTC(year, month - 1, day, hour, minute));
+         // Validar si el objeto Date es válido
+            if (isNaN(date.getTime())) {
+                console.error('Fecha inválida:', { dateStr, timeStr });
+                return 'Fecha inválida';
+            }
+    // Formatear la salida
+        const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
+        const monthName = date.toLocaleDateString('es-ES', { month: 'long' });
+        const formattedHour = date.getHours().toString().padStart(2, '0');
+        const formattedMinute = date.getMinutes().toString().padStart(2, '0');
+    
+        return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${formattedHour}:${formattedMinute} horas`;
+    }
 
 
         function parseTimeStringToDate(timeStr) {
-            const now = DateTime.now().setZone('America/Santiago');
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            return now.set({ hour: hours, minute: minutes, second: 0 });
-        }
-
+    const now = new Date(); // Fecha actual para referencia
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    now.setHours(hours, minutes, 0, 0); // Ajusta la hora y los minutos en la fecha actual
+    return now;
+}
         function fetchUpcomingActivities() {
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
-                    const now = DateTime.now().setZone('America/Santiago');
+                    const now = new Date();
+                    const todayStr = now.toISOString().split('T')[0];
                     let upcomingActivities = [];
 
                     data.slice(1).forEach(row => {
-                        const title = row[0];
-                        const startTimeStr = row[2];
-                        const room = row[4];
-                        const eventDateStr = row[5];
-
-                        const eventStartTime = DateTime.fromISO(`${eventDateStr}T${startTimeStr}`, { zone: 'America/Santiago' });
-                        if (room?.trim().toLowerCase() === sala.toLowerCase() && eventStartTime > now) {
+                    const title = row[0];
+                    const startTimeStr = row[2];
+                    const endTimeStr = row[3];
+                    const room = row[4];
+                    const eventDateStr = row[5];
+                
+                    const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+                    const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+                
+                    // Excluir actividad actual de la barra
+                    if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
+                        if (now < eventStartTime) {
                             upcomingActivities.push(`${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`);
-                        }
-                    });
-
+        }
+    }
+});
+                    // Limitar la cantidad de actividades a mostrar
                     upcomingActivities = upcomingActivities.slice(0, maxActivities);
                     if (upcomingActivities.length > 0) {
                         const tickerText = upcomingActivities
@@ -196,20 +230,28 @@
                         document.getElementById('ticker-text').innerHTML = tickerText;
                     } else {
                         document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
+                        document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching upcoming activities:', error);
                     document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
+                    document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades';
                 });
         }
 
+
         function fetchData() {
+            console.log("Iniciando fetch de datos...");
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
-                    const now = DateTime.now().setZone('America/Santiago');
+                    const now = new Date();
+                    const today = now.toISOString().split('T')[0];  
                     let foundActivity = false;
+
+                    console.log("Fecha actual:", today);
+                    console.log("Hora actual:", now);
 
                     data.slice(1).forEach(row => {
                         const title = row[0];
@@ -220,20 +262,34 @@
                         const eventDateStr = row[5];
                         const imageUrl = row[6];
 
-                        const eventStartTime = DateTime.fromISO(`${eventDateStr}T${startTimeStr}`, { zone: 'America/Santiago' });
-                        const eventEndTime = DateTime.fromISO(`${eventDateStr}T${endTimeStr}`, { zone: 'America/Santiago' });
+                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
-                        if (room === sala && now >= eventStartTime && now <= eventEndTime) {
-                            if (imageUrl && imageUrl.trim() !== "") {
-                                document.body.style.backgroundImage = `url('${imageUrl}')`;
-                                document.getElementById('activity-container').style.display = 'none';
-                            } else {
-                                document.getElementById('activity-container').style.display = 'flex';
-                                document.getElementById('activity-title').innerText = title;
-                                document.getElementById('activity-description').innerText = description;
-                                document.getElementById('activity-time').innerText = formatDateAndTime(eventDateStr, startTimeStr);
+                       if (room === sala && eventDateStr === today) {
+                           const startTime = parseTimeStringToDate(startTimeStr);
+                           const endTime = parseTimeStringToDate(endTimeStr);
+                           const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
+
+                       if (now >= startTimeMinusFive && now <= endTime) {
+                                                if (imageUrl && imageUrl.trim() !== "") {
+                                                    clearInterval(backgroundInterval);
+                                                    document.body.style.backgroundImage = `url('${imageUrl}')`;
+                                                    document.getElementById('activity-container').style.display = 'none';
+                                                    console.log("Mostrando solo la imagen completa:", imageUrl);
+                                                } else {
+                                                    console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
+                                                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                                                    document.getElementById('activity-container').style.display = 'flex';
+                                                    document.getElementById('activity-title').innerText = title;
+                                                    document.getElementById('activity-description').innerText = description;
+                                                    document.getElementById('activity-time').innerText = formattedDateTime;
+                                                    // Remueve la clase para restaurar el tamaño original
+                                                    document.getElementById('activity-title').classList.remove('no-activity-message');
+                
+                                                    startBackgroundRotation();
+                                                    console.log("Mostrando información del evento:", title);
+                                                }
+                                                foundActivity = true;
                             }
-                            foundActivity = true;
                         }
                     });
 
@@ -242,12 +298,20 @@
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'flex';
+
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
+
+                        startBackgroundRotation();
+                        console.log("No se encontró ninguna actividad para mostrar");
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-time').innerText = '';
+                    startBackgroundRotation();
                 });
         }
 
@@ -258,7 +322,8 @@
         setInterval(fetchUpcomingActivities, 60000);
         setInterval(() => {
             location.reload();
-        }, 600000); // 10 minutos
+        }, 600000); // 60 segundos
+
     </script>
 </body>
 </html>
