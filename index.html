@@ -180,7 +180,7 @@
                 console.error('Fecha inválida:', { dateStr, timeStr });
                 return 'Fecha inválida';
             }
-        console.log('prueba', hour);
+      //  console.log('prueba', hour);
 
     // Formatear la salida
         const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
@@ -263,6 +263,7 @@
                 .then(data => {
                     console.log("Datos recibidos:", data);
                     const eventosOrdenados = procesarEventos(data);
+                    mostrarEventos(eventosOrdenados)
             
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  
