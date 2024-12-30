@@ -193,6 +193,17 @@
     }
 
 
+        function procesarEventos(eventos) {
+            // Ordenar eventos por fecha y hora de inicio
+            eventos.sort((a, b) => {
+                const fechaHoraInicioA = new Date(`${a.fecha}T${a.horaInicio}`);
+                const fechaHoraInicioB = new Date(`${b.fecha}T${b.horaInicio}`);
+                return fechaHoraInicioA - fechaHoraInicioB;
+            });
+        
+            console.log("Eventos ordenados por proximidad:", eventos);
+            return eventos;
+}
         function parseTimeStringToDate(timeStr) {
     const now = new Date(); // Fecha actual para referencia
     const [hours, minutes] = timeStr.split(':').map(Number);
@@ -250,6 +261,9 @@
             fetch(jsonURL)
                 .then(response => response.json())
                 .then(data => {
+                    console.log("Datos recibidos:", data);
+                    const eventosOrdenados = procesarEventos(data);
+            
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];  
                     let foundActivity = false;
