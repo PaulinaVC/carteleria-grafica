@@ -343,10 +343,10 @@
                 nextActivity = upcomingActivities[0]; // La actividad más próxima
 
                 // Mostrar la próxima actividad dentro de los próximos 7 días
-                document.getElementById('next-activity-date').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime.toISOString().split('T')[1].split('.')[0]);
-                document.getElementById('next-activity-title').textContent = nextActivity.title;
-                document.getElementById('next-activity-container').style.display = 'block';
-                document.getElementById('no-activities').style.display = 'none';
+                document.getElementById('activity-container').style.display = 'block';
+                document.getElementById('activity-title').textContent = nextActivity.title;
+                document.getElementById('activity-description').innerText = nextActivity.description;
+                document.getElementById('activity-time').textContent = formattedDateTime;
 
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
@@ -357,8 +357,8 @@
         })
         .catch(error => {
             console.error('Error al cargar los datos de actividades:', error);
-            document.getElementById('no-activities').style.display = 'block';
-            document.getElementById('next-activity-container').style.display = 'none';
+            document.getElementById('activity-container').style.display = 'block';
+            document.getElementById('activity-title').style.display = 'No hay actividad programada en esta sala';
         });
 }
 
