@@ -185,6 +185,8 @@
         const monthName = date.toLocaleDateString('es-ES', { month: 'long' });
         const formattedHour = date.getHours().toString().padStart(2, '0');
         const formattedMinute = date.getMinutes().toString().padStart(2, '0');
+        const eventdayproof = row[2];
+            console.log('Hora prueba', eventdayproof);
     
         return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${formattedHour}:${formattedMinute} horas`;
     }
@@ -196,7 +198,7 @@
     now.setHours(hours, minutes, 0, 0); // Ajusta la hora y los minutos en la fecha actual
     return now;
 }
-         console.log("Fecha, hora y minutos:", now, hours, minutes);
+         console.log("Fecha, hora y minutos:", {now, hours, minutes});
         function fetchUpcomingActivities() {
             fetch(jsonURL)
                 .then(response => response.json())
