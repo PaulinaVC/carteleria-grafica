@@ -225,8 +225,13 @@
         }
     }
 });
-                    // Ordenar listado de actividades
-                    upcomingActivities =  upcomingActivities.sort()
+                    // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
+                    upcomingActivities.sort((a, b) => {
+                        if (a.startTime !== b.startTime) {
+                            return a.startTime - b.startTime; // Ordena por hora de inicio
+                        }
+                        return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
+                    });
                     
                     // Limitar la cantidad de actividades a mostrar
                     
