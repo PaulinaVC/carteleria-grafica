@@ -242,7 +242,7 @@
                     upcomingActivities = upcomingActivities.slice(0, maxActivities);
                     if (upcomingActivities.length > 0) {
                         const tickerText = upcomingActivities
-                            .map(activity => `<span class="ticker-item">${activity}</span>`)
+                            .map(activity => `<span class="ticker-item">${activity.title}</span>`)
                             .join('<span class="ticker-separator"> • </span>');
                         document.getElementById('ticker-text').innerHTML = tickerText;
                     } else {
