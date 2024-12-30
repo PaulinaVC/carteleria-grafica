@@ -343,8 +343,7 @@
                 nextActivity = upcomingActivities[0]; // La actividad más próxima
                 const startTime = parseTimeStringToDate(startTimeStr);
                 const endTime = parseTimeStringToDate(endTimeStr);
-                const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
-                const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                const formattedDateTime = formatDateAndTime(nextActivity.eventDateStr, nextActivity.startTimeStr);
                 
                 // Mostrar la próxima actividad dentro de los próximos 7 días
                 document.getElementById('activity-container').style.display = 'block';
