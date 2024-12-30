@@ -111,9 +111,45 @@
         transform: translateX(-100%);
     }
 }
+
+#no-activities, #next-activity-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 24px;
+}
+
+#no-activities h1, #next-activity-container h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+#no-activities p, #next-activity-container p {
+    font-size: 20px;
+}
+
     </style>
 </head>
 <body>
+    <div id="next-activity-container" style="display: none;">
+    <h1>Próxima Actividad</h1>
+    <p><strong>Fecha:</strong> <span id="next-activity-date"></span></p>
+    <p><strong>Título de la actividad:</strong> <span id="next-activity-title"></span></p>
+</div>
+
+<div id="no-activities" style="display: none;">
+    <h1>No hay actividades programadas en este momento.</h1>
+</div>
+
     <div class="text-container" id="activity-container">
         <!-- Contenedor de texto organizado -->
         <div class="text-content">
@@ -200,137 +236,96 @@
     return now;
 }
          
-        function fetchUpcomingActivities() {
+       function fetchData() {
+    console.log("Iniciando fetch de datos...");
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
             const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            let upcomingActivities = [];
+            const today = now.toISOString().split('T')[0];  
+            let foundActivity = false;
+            let nextActivity = null;
+
+            console.log("Fecha actual:", today);
+            console.log("Hora actual:", now);
+
+            // Filtrar las actividades que están dentro de los próximos 7 días
+            const upcomingActivities = [];
 
             data.slice(1).forEach(row => {
                 const title = row[0];
+                const description = row[1];
                 const startTimeStr = row[2];
                 const endTimeStr = row[3];
                 const room = row[4];
                 const eventDateStr = row[5];
+                const imageUrl = row[6];
 
-                const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-                const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+                console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
 
-                // Excluir actividad actual de la barra
-                if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
-                    if (now < eventStartTime) {
-                        upcomingActivities.push({
-                            title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
-                            startTime: eventStartTime,
-                            eventDate: eventDateStr
-                        });
+                const eventStartTime = parseTimeStringToDate(startTimeStr);
+                const eventEndTime = parseTimeStringToDate(endTimeStr);
+
+                // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
+                if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+                    upcomingActivities.push({
+                        title,
+                        description,
+                        startTime: eventStartTime,
+                        eventDate: eventDateStr,
+                        imageUrl
+                    });
+                }
+
+                // Si la actividad es para el día de hoy y está en el horario actual
+                if (room === sala && eventDateStr === today) {
+                    const startTime = parseTimeStringToDate(startTimeStr);
+                    const endTime = parseTimeStringToDate(endTimeStr);
+                    const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
+
+                    if (now >= startTimeMinusFive && now <= endTime) {
+                        foundActivity = true;
+
+                        // Mostrar la actividad actual si se encuentra en el horario actual
+                        if (imageUrl && imageUrl.trim() !== "") {
+                            clearInterval(backgroundInterval);
+                            document.body.style.backgroundImage = `url('${imageUrl}')`;
+                            document.getElementById('activity-container').style.display = 'none';
+                            console.log("Mostrando solo la imagen completa:", imageUrl);
+                        } else {
+                            console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
+                            const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                            document.getElementById('activity-container').style.display = 'block';
+                            document.getElementById('activity-title').textContent = title;
+                            document.getElementById('activity-time').textContent = formattedDateTime;
+                        }
                     }
                 }
             });
 
-            // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
-            upcomingActivities.sort((a, b) => {
-                if (a.startTime !== b.startTime) {
-                    return a.startTime - b.startTime; // Ordena por hora de inicio
-                }
-                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
-            });
+            // Si no se encontró actividad para el horario actual, mostramos la próxima actividad
+            if (!foundActivity && upcomingActivities.length > 0) {
+                nextActivity = upcomingActivities[0]; // La actividad más próxima
 
-            // Limitar la cantidad de actividades a mostrar
-            upcomingActivities = upcomingActivities.slice(0, maxActivities);
+                // Mostrar la próxima actividad dentro de los próximos 7 días
+                document.getElementById('next-activity-date').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime.toISOString().split('T')[1].split('.')[0]);
+                document.getElementById('next-activity-title').textContent = nextActivity.title;
+                document.getElementById('next-activity-container').style.display = 'block';
+                document.getElementById('no-activities').style.display = 'none';
 
-            // Mostrar las actividades en el ticker
-            if (upcomingActivities.length > 0) {
-                const tickerText = upcomingActivities
-                    .map(activity => `<span class="ticker-item">${activity.title}</span>`)
-                    .join('<span class="ticker-separator"> • </span>');
-                document.getElementById('ticker-text').innerHTML = tickerText;
-            } else {
-                document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
+            } else if (upcomingActivities.length === 0) {
+                // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
+                document.getElementById('no-activities').style.display = 'block';
+                document.getElementById('next-activity-container').style.display = 'none';
             }
+
         })
         .catch(error => {
-            console.error('Error fetching upcoming activities:', error);
-            document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
+            console.error('Error al cargar los datos de actividades:', error);
+            document.getElementById('no-activities').style.display = 'block';
+            document.getElementById('next-activity-container').style.display = 'none';
         });
 }
-
-
-        function fetchData() {
-            console.log("Iniciando fetch de datos...");
-            fetch(jsonURL)
-                .then(response => response.json())
-                .then(data => {
-                    const now = new Date();
-                    const today = now.toISOString().split('T')[0];  
-                    let foundActivity = false;
-
-                    console.log("Fecha actual:", today);
-                    console.log("Hora actual:", now);
-
-                    data.slice(1).forEach(row => {
-                        const title = row[0];
-                        const description = row[1];
-                        const startTimeStr = row[2];
-                        const endTimeStr = row[3];
-                        const room = row[4];
-                        const eventDateStr = row[5];
-                        const imageUrl = row[6];
-
-                        console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
-
-                       if (room === sala && eventDateStr === today) {
-                           const startTime = parseTimeStringToDate(startTimeStr);
-                           const endTime = parseTimeStringToDate(endTimeStr);
-                           const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
-
-                       if (now >= startTimeMinusFive && now <= endTime) {
-                                                if (imageUrl && imageUrl.trim() !== "") {
-                                                    clearInterval(backgroundInterval);
-                                                    document.body.style.backgroundImage = `url('${imageUrl}')`;
-                                                    document.getElementById('activity-container').style.display = 'none';
-                                                    console.log("Mostrando solo la imagen completa:", imageUrl);
-                                                } else {
-                                                    console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
-                                                    const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
-                                                    document.getElementById('activity-container').style.display = 'flex';
-                                                    document.getElementById('activity-title').innerText = title;
-                                                    document.getElementById('activity-description').innerText = description;
-                                                    document.getElementById('activity-time').innerText = formattedDateTime;
-                                                    // Remueve la clase para restaurar el tamaño original
-                                                    document.getElementById('activity-title').classList.remove('no-activity-message');
-                
-                                                    startBackgroundRotation();
-                                                    console.log("Mostrando información del evento:", title);
-                                                }
-                                                foundActivity = true;
-                            }
-                        }
-                    });
-
-                    if (!foundActivity) {
-                        document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
-                        document.getElementById('activity-description').innerText = '';
-                        document.getElementById('activity-time').innerText = '';
-                        document.getElementById('activity-container').style.display = 'flex';
-
-                        // Añade la clase para reducir el tamaño de la fuente
-                        document.getElementById('activity-title').classList.add('no-activity-message');
-
-                        startBackgroundRotation();
-                        console.log("No se encontró ninguna actividad para mostrar");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
-                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
-                    document.getElementById('activity-time').innerText = '';
-                    startBackgroundRotation();
-                });
-        }
 
         fetchData();
         fetchUpcomingActivities();
