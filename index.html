@@ -180,14 +180,14 @@
                 console.error('Fecha inválida:', { dateStr, timeStr });
                 return 'Fecha inválida';
             }
+        console.log('prueba', hour);
+
     // Formatear la salida
         const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
         const monthName = date.toLocaleDateString('es-ES', { month: 'long' });
         const formattedHour = date.getHours().toString().padStart(2, '0');
         const formattedMinute = date.getMinutes().toString().padStart(2, '0');
-        const dayproof = date.getHours();
-        console.log('prueba', dayproof);
-
+       
     
         return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${formattedHour}:${formattedMinute} horas`;
     }
