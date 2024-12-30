@@ -235,6 +235,64 @@
     now.setHours(hours, minutes, 0, 0); // Ajusta la hora y los minutos en la fecha actual
     return now;
 }
+
+          function fetchUpcomingActivities() {
+    fetch(jsonURL)
+        .then(response => response.json())
+        .then(data => {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            let upcomingActivities = [];
+
+            data.slice(1).forEach(row => {
+                const title = row[0];
+                const startTimeStr = row[2];
+                const endTimeStr = row[3];
+                const room = row[4];
+                const eventDateStr = row[5];
+
+                const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+                const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+
+                // Excluir actividad actual de la barra
+                if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
+                    if (now < eventStartTime) {
+                        upcomingActivities.push({
+                            title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
+                            startTime: eventStartTime,
+                            eventDate: eventDateStr
+                        });
+                    }
+                }
+            });
+
+            // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
+            upcomingActivities.sort((a, b) => {
+                if (a.startTime !== b.startTime) {
+                    return a.startTime - b.startTime; // Ordena por hora de inicio
+                }
+                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
+            });
+
+            // Limitar la cantidad de actividades a mostrar
+            upcomingActivities = upcomingActivities.slice(0, maxActivities);
+
+            // Mostrar las actividades en el ticker
+            if (upcomingActivities.length > 0) {
+                const tickerText = upcomingActivities
+                    .map(activity => `<span class="ticker-item">${activity.title}</span>`)
+                    .join('<span class="ticker-separator"> • </span>');
+                document.getElementById('ticker-text').innerHTML = tickerText;
+            } else {
+                document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching upcoming activities:', error);
+            document.getElementById('ticker-text').innerText = 'Error al cargar las próximas actividades.';
+        });
+}
+
          
        function fetchData() {
     console.log("Iniciando fetch de datos...");
