@@ -341,7 +341,8 @@
             // Si no se encontró actividad para el horario actual, mostramos la próxima actividad
             if (!foundActivity && upcomingActivities.length > 0) {
                 nextActivity = upcomingActivities[0]; // La actividad más próxima
-
+                const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                
                 // Mostrar la próxima actividad dentro de los próximos 7 días
                 document.getElementById('activity-container').style.display = 'block';
                 document.getElementById('activity-title').textContent = nextActivity.title;
