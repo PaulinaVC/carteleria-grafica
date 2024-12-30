@@ -355,6 +355,7 @@
                             const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
                             document.getElementById('activity-container').style.display = 'block';
                             document.getElementById('activity-title').textContent = title;
+                            document.getElementById('activity-description').innerText = description;
                             document.getElementById('activity-time').textContent = formattedDateTime;
                         }
                     }
