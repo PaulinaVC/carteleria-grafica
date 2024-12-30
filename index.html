@@ -174,7 +174,7 @@
         const [year, month, day] = dateStr.split('-').map(Number); // Convertir a números
         const [hour, minute] = timeStr.split(':').map(Number);
             // Crear el objeto Date de manera explícita
-        const date = new Date(Date.UTC(year, month - 1, day, hour, minute));
+        const date = new Date(year, month - 1, day, hour, minute);
          // Validar si el objeto Date es válido
             if (isNaN(date.getTime())) {
                 console.error('Fecha inválida:', { dateStr, timeStr });
@@ -189,7 +189,7 @@
         const formattedMinute = date.getMinutes().toString().padStart(2, '0');
        
     
-        return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${hour}:${minute} horas`;
+        return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${day} de ${monthName} • ${formattedHour}:${formattedMinute} horas`;
     }
 
 
