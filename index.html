@@ -303,7 +303,7 @@
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
                 if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
-                        title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
+                        title: title,
                         description,
                         startTime: eventStartTime,
                         eventDate: eventDateStr,
@@ -357,7 +357,7 @@
                 document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad:" + upcomingActivities[0].title;
                 document.getElementById('activity-description').innerText = upcomingActivities[0].description;
-                document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime.toISOString().split('T')[1].split('.')[0]);
+                document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime);
 
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
