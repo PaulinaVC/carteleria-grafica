@@ -306,7 +306,15 @@
                         eventDate: eventDateStr,
                         imageUrl
                     });
+}
+                    // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
+            upcomingActivities.sort((a, b) => {
+                if (a.startTime !== b.startTime) {
+                    return a.startTime - b.startTime; // Ordena por hora de inicio
                 }
+                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
+            });
+                
 
                 // Si la actividad es para el día de hoy y está en el horario actual
                 if (room === sala && eventDateStr === today) {
