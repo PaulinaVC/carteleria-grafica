@@ -270,7 +270,6 @@
             const today = now.toISOString().split('T')[0];  
             let foundActivity = false;
             let nextActivity = null;
- console.log("PROXIMA ACTIVIDAD EN LISTA:", upcomingActivities[0]);
           /*  console.log("Fecha actual:", today);
             console.log("Hora actual:", now);*/
 
@@ -290,7 +289,14 @@
 
                 const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);
-
+                 
+                upcomingActivities.sort((a, b) => {
+                if (a.startTime !== b.startTime) {
+                    return a.startTime - b.startTime; // Ordena por hora de inicio
+                }
+                    
+                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
+            });
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
                 if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
