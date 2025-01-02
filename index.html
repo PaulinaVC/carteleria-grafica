@@ -262,7 +262,7 @@
 
          
              function fetchData() {
-   /* console.log("Iniciando fetch de datos...");*/
+                   /* console.log("Iniciando fetch de datos...");*/
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
@@ -270,7 +270,7 @@
             const today = now.toISOString().split('T')[0];  
             let foundActivity = false;
             let nextActivity = null;
-
+ console.log("PROXIMA ACTIVIDAD EN LISTA:", upcomingActivities[0]);
           /*  console.log("Fecha actual:", today);
             console.log("Hora actual:", now);*/
 
