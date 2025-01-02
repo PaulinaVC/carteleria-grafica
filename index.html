@@ -354,9 +354,11 @@ v<!DOCTYPE html>
 
         })
         .catch(error => {
-            console.error('Error al cargar los datos de actividades:', error);
-            document.getElementById('activity-container').style.display = 'block';
-            document.getElementById('activity-title').style.display = 'No hay actividad programada en esta sala';
+            console.error('Error fetching data:', error);
+                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-time').innerText = '';
+                    startBackgroundRotation();
         });
 }
 
