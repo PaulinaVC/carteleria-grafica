@@ -139,7 +139,7 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';
-        console.log("Sala seleccionada:", sala);
+        /*console.log("Sala seleccionada:", sala);*/
 
         const jsonURL = 'https://script.google.com/macros/s/AKfycbz2zQZAK2GOzI51Cuab0JmJLKXhKukJ3ab0YM2w_7JWCcNhDbPdX4YokBWdP8_gc6VX/exec';
         const maxActivities = 5;
@@ -262,7 +262,7 @@
 
          
              function fetchData() {
-    console.log("Iniciando fetch de datos...");
+   /* console.log("Iniciando fetch de datos...");*/
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
@@ -271,8 +271,8 @@
             let foundActivity = false;
             let nextActivity = null;
 
-            console.log("Fecha actual:", today);
-            console.log("Hora actual:", now);
+          /*  console.log("Fecha actual:", today);
+            console.log("Hora actual:", now);*/
 
             // Filtrar las actividades que están dentro de los próximos 7 días
             const upcomingActivities = [];
@@ -286,7 +286,7 @@
                 const eventDateStr = row[5];
                 const imageUrl = row[6];
 
-                console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);
+              /*  console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);*/
 
                 const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);
@@ -316,9 +316,9 @@
                             clearInterval(backgroundInterval);
                             document.body.style.backgroundImage = `url('${imageUrl}')`;
                             document.getElementById('activity-container').style.display = 'none';
-                            console.log("Mostrando solo la imagen completa:", imageUrl);
+                          /*  console.log("Mostrando solo la imagen completa:", imageUrl);*/
                         } else {
-                            console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
+                          /*  console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);*/
                             const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
                             document.getElementById('activity-container').style.display = 'flex';
                             document.getElementById('activity-title').textContent = title;
