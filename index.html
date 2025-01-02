@@ -359,6 +359,7 @@
                 document.getElementById('activity-description').innerText = upcomingActivities[0].description;
                 document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime.toISOString().split('T')[1].split('.')[0]);
                 console.log("PROXIMA HORA:", upcomingActivities[0].startTime);
+                console.log("PROXIMA HORA:", formatDateAndTime(upcomingActivities[0].eventDate,upcomingActivities[0].startTime);
 
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
