@@ -265,7 +265,7 @@
 }
 
          
-       function fetchData() {
+             function fetchData() {
     console.log("Iniciando fetch de datos...");
     fetch(jsonURL)
         .then(response => response.json())
@@ -295,7 +295,7 @@
                 const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);
 
-                // Filtrar actividades para la sala correcta y dentro del rango de 7 días a partir de hoy
+                // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
                 if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
                         title,
@@ -305,30 +305,66 @@
                         imageUrl
                     });
                 }
+
+                // Si la actividad es para el día de hoy y está en el horario actual
+                if (room === sala && eventDateStr === today) {
+                    const startTime = parseTimeStringToDate(startTimeStr);
+                    const endTime = parseTimeStringToDate(endTimeStr);
+                    const startTimeMinusFive = new Date(startTime.getTime() - 10 * 60000); // 5 minutos antes
+
+                    if (now >= startTimeMinusFive && now <= endTime) {
+                        foundActivity = true;
+
+                        // Mostrar la actividad actual si se encuentra en el horario actual
+                        if (imageUrl && imageUrl.trim() !== "") {
+                            clearInterval(backgroundInterval);
+                            document.body.style.backgroundImage = `url('${imageUrl}')`;
+                            document.getElementById('activity-container').style.display = 'none';
+                            console.log("Mostrando solo la imagen completa:", imageUrl);
+                        } else {
+                            console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
+                            const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
+                            document.getElementById('activity-container').style.display = 'flex';
+                            document.getElementById('activity-title').textContent = title;
+                            document.getElementById('activity-description').innerText = description;
+                            document.getElementById('activity-time').textContent = formattedDateTime;
+                            document.getElementById('activity-title').classList.remove('no-activity-message');
+                        }
+                    }
+                }
             });
 
-            if (upcomingActivities.length > 0) {
-                // Ordenar las actividades por fecha y hora de inicio
-                upcomingActivities.sort((a, b) => new Date(a.eventDate + 'T' + a.startTime) - new Date(b.eventDate + 'T' + b.startTime));
+            // Si no se encontró actividad para el horario actual, mostramos la próxima actividad
+            if (!foundActivity && upcomingActivities.length > 0) {
+                nextActivity = upcomingActivities[0]; // La actividad más próxima
 
-                // Seleccionar la actividad más cercana
-                nextActivity = upcomingActivities[0];
-
-                // Mostrar la próxima actividad
+                // Mostrar la próxima actividad dentro de los próximos 7 días
                 document.getElementById('activity-container').style.display = 'flex';
-                document.getElementById('activity-title').textContent = "Próxima Actividad: " + nextActivity.title;
+                document.getElementById('activity-title').textContent = "Próxima Actividad:" + nextActivity.title;
                 document.getElementById('activity-description').innerText = nextActivity.description;
-                document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
-            } else {
-                // Si no hay actividades dentro de los próximos 7 días
-                document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
-                document.getElementById('activity-description').innerText = '';
-                document.getElementById('activity-time').innerText = '';
-                document.getElementById('activity-container').style.display = 'flex';
+                document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime.toISOString().split('T')[1].split('.')[0]);
+
+            } else if (upcomingActivities.length === 0) {
+                // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
+               document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').style.display = 'flex';
+
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
+
+                        startBackgroundRotation();
+                        console.log("No se encontró ninguna actividad para mostrar");
             }
+
         })
         .catch(error => {
-            console.error('Error al cargar los datos:', error);
+            console.error('Error fetching data:', error);
+                    document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-time').innerText = '';
+                    startBackgroundRotation();
         });
 }
 
