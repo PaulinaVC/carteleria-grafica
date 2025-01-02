@@ -207,7 +207,7 @@
     return now;
 }
 
-          function fetchUpcomingActivities() {
+         function fetchUpcomingActivities() {
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
@@ -224,8 +224,8 @@
 
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
- // 
-                     // Excluir actividad actual de la barra
+
+                // Excluir actividad actual de la barra
                 if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
                     if (now < eventStartTime) {
                         upcomingActivities.push({
@@ -255,7 +255,7 @@
                     .join('<span class="ticker-separator"> • </span>');
                 document.getElementById('ticker-text').innerHTML = tickerText;
             } else {
-                document.getElementById('ticker-text').innerText = 'No hay más actividades programadas';
+                document.getElementById('ticker-text').innerText = 'No hay próximas actividades programadas.';
             }
         })
         .catch(error => {
@@ -274,7 +274,7 @@
             const today = now.toISOString().split('T')[0];  
             let foundActivity = false;
             let nextActivity = null;
-          /*  console.log("Fecha actual:", today);
+          /*console.log("Fecha actual:", today);
             console.log("Hora actual:", now);*/
 
             // Filtrar las actividades que están dentro de los próximos 7 días
@@ -297,8 +297,7 @@
                 const eventEndTime = parseTimeStringToDate(endTimeStr);
 
                     
-                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
-            });
+                
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
                 if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
