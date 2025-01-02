@@ -225,16 +225,7 @@
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
 
-                // Excluir actividad actual de la barra
-                if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
-                    if (now < eventStartTime) {
-                        upcomingActivities.push({
-                            title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
-                            startTime: eventStartTime,
-                            eventDate: eventDateStr
-                        });
-                    }
-                }
+            
             });
 
             // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
