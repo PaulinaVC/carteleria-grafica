@@ -224,7 +224,12 @@
 
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
-
+ // Excluir actividad actual de la barra
+                    if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
+                        if (now < eventStartTime) {
+                            upcomingActivities.push(`${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`);
+        }
+    }
             
             });
 
