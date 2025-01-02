@@ -326,10 +326,11 @@
                         } else {
                             console.log('eventDateStr:', eventDateStr, 'startTimeStr:', startTimeStr);
                             const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
-                            document.getElementById('activity-container').style.display = 'block';
+                            document.getElementById('activity-container').style.display = 'flex';
                             document.getElementById('activity-title').textContent = title;
                             document.getElementById('activity-description').innerText = description;
                             document.getElementById('activity-time').textContent = formattedDateTime;
+                            document.getElementById('activity-title').classList.remove('no-activity-message');
                         }
                     }
                 }
@@ -340,7 +341,7 @@
                 nextActivity = upcomingActivities[0]; // La actividad más próxima
                 
                 // Mostrar la próxima actividad dentro de los próximos 7 días
-                document.getElementById('activity-container').style.display = 'block';
+                document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad:", nextActivity.title;
                 document.getElementById('activity-description').innerText = nextActivity.description;
                 document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime.toISOString().split('T')[1].split('.')[0]);
