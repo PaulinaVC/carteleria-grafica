@@ -307,37 +307,31 @@
                 }
             });
 
-            // Filtrar solo las actividades futuras
-            const futureActivities = upcomingActivities.filter(activity => new Date(activity.eventDate + 'T' + activity.startTime) > now);
+            if (upcomingActivities.length > 0) {
+                // Ordenar las actividades por fecha y hora de inicio
+                upcomingActivities.sort((a, b) => new Date(a.eventDate + 'T' + a.startTime) - new Date(b.eventDate + 'T' + b.startTime));
 
-            // Si hay actividades futuras, seleccionamos la más próxima
-            if (futureActivities.length > 0) {
-                nextActivity = futureActivities.reduce((prev, curr) => {
-                    const prevDateTime = new Date(prev.eventDate + 'T' + prev.startTime);
-                    const currDateTime = new Date(curr.eventDate + 'T' + curr.startTime);
-                    return prevDateTime < currDateTime ? prev : curr; // Compara fechas y elige la más cercana
-                });
+                // Seleccionar la actividad más cercana
+                nextActivity = upcomingActivities[0];
 
                 // Mostrar la próxima actividad
                 document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad: " + nextActivity.title;
                 document.getElementById('activity-description').innerText = nextActivity.description;
-                document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime.toISOString().split('T')[1].split('.')[0]);
+                document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
             } else {
-                // Si no hay actividades futuras
+                // Si no hay actividades dentro de los próximos 7 días
                 document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
                 document.getElementById('activity-description').innerText = '';
                 document.getElementById('activity-time').innerText = '';
                 document.getElementById('activity-container').style.display = 'flex';
-
-                // Añade la clase para reducir el tamaño de la fuente
-                document.getElementById('activity-title').classList.add('no-activity-message');
-
-                startBackgroundRotation();
-                console.log("No se encontró ninguna actividad para mostrar");
             }
+        })
+        .catch(error => {
+            console.error('Error al cargar los datos:', error);
         });
 }
+
 
 
         fetchData();
