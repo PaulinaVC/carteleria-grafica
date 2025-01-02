@@ -340,8 +340,16 @@ v<!DOCTYPE html>
 
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
-                document.getElementById('activity-container').style.display = 'block';
-                document.getElementById('activity-title').style.display = 'none';
+               document.getElementById('activity-title').innerText = 'No hay actividad programada en esta sala para este horario';
+                        document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-time').innerText = '';
+                        document.getElementById('activity-container').style.display = 'flex';
+
+                        // Añade la clase para reducir el tamaño de la fuente
+                        document.getElementById('activity-title').classList.add('no-activity-message');
+
+                        startBackgroundRotation();
+                        console.log("No se encontró ninguna actividad para mostrar");
             }
 
         })
