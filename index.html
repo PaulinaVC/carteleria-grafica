@@ -275,6 +275,9 @@
 
             // Filtrar las actividades que están dentro de los próximos 7 días
             const upcomingActivities = [];
+            const prueba = fetchUpcomingActivities().[0];
+             console.log("PROXIMA ACTIVIDAD EN LISTA:", prueba);
+            
 
             data.slice(1).forEach(row => {
                 const title = row[0];
@@ -289,11 +292,7 @@
 
                 const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);
-                 
-                upcomingActivities.sort((a, b) => {
-                if (a.startTime !== b.startTime) {
-                    return a.startTime - b.startTime; // Ordena por hora de inicio
-                }
+
                     
                 return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
             });
