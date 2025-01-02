@@ -352,12 +352,13 @@
             // Si no se encontró actividad para el horario actual, mostramos la próxima actividad
             if (!foundActivity && upcomingActivities.length > 0) {
                 nextActivity = upcomingActivities[0]; // La actividad más próxima
-            console.log("PROXIMA ACTIVIDAD EN LISTA:", nextActivity);
+          /*  console.log("PROXIMA ACTIVIDAD EN LISTA:", nextActivity);*/
                 // Mostrar la próxima actividad dentro de los próximos 7 días
                 document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad:" + upcomingActivities[0].title;
                 document.getElementById('activity-description').innerText = upcomingActivities[0].description;
                 document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime.toISOString().split('T')[1].split('.')[0]);
+                console.log("PROXIMA HORA:", upcomingActivities[0].startTime.toISOString().split('T')[1].split('.')[0]);
 
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
