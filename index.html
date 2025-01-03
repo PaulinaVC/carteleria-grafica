@@ -125,6 +125,7 @@
         <!-- Contenedor de texto organizado -->
         <div class="text-content">
             <h1 id="activity-title">Cargando...</h1>
+            <p class="subtitle" id="activity-description">Cargando subtitulo...</p>
             <p class="description" id="activity-description">Cargando descripción...</p>
             <p class="date-time" id="activity-time">Cargando fecha...</p>
         </div>
@@ -217,10 +218,10 @@
 
             data.slice(1).forEach(row => {
                 const title = row[0];
-                const startTimeStr = row[2];
-                const endTimeStr = row[3];
-                const room = row[4];
-                const eventDateStr = row[5];
+                const startTimeStr = row[3];
+                const endTimeStr = row[4];
+                const room = row[5];
+                const eventDateStr = row[6];
 
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
@@ -283,12 +284,13 @@
 
             data.slice(1).forEach(row => {
                 const title = row[0];
-                const description = row[1];
-                const startTimeStr = row[2];
-                const endTimeStr = row[3];
-                const room = row[4];
-                const eventDateStr = row[5];
-                const imageUrl = row[6];
+                const subtitle = row[1];
+                const description = row[2];
+                const startTimeStr = row[3];
+                const endTimeStr = row[4];
+                const room = row[5];
+                const eventDateStr = row[6];
+                const imageUrl = row[7];
 
               /*  console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);*/
 
@@ -304,6 +306,7 @@
                 if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
                         title: title,
+                        subtitle,
                         description,
                         startTime: startTimeStr,
                         eventDate: eventDateStr,
@@ -341,6 +344,7 @@
                             const formattedDateTime = formatDateAndTime(eventDateStr, startTimeStr);
                             document.getElementById('activity-container').style.display = 'flex';
                             document.getElementById('activity-title').textContent = title;
+                            document.getElementById('activity-subtitle').textContent = subtitle;
                             document.getElementById('activity-description').innerText = description;
                             document.getElementById('activity-time').textContent = formattedDateTime;
                             document.getElementById('activity-title').classList.remove('no-activity-message');
@@ -356,15 +360,14 @@
                 // Mostrar la próxima actividad dentro de los próximos 7 días
                 document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad";
-                document.getElementById('activity-description').innerText = upcomingActivities[0].title;
+                document.getElementById('activity-subtitle').textContent = upcomingActivities[0].title;
+                document.getElementById('activity-description').innerText = '';
                 document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime);
-              /*  document.getElementById('activity-time').textContent = formatDateAndTime(upcomingActivities[0].eventDate, upcomingActivities[0].startTime.toISOString().split('T')[1].split('.')[0]);
-                console.log("PROXIMA HORA:", upcomingActivities[0].startTime);
-                console.log("PROXIMA HORA:", formatDateAndTime(upcomingActivities[0].eventDate,upcomingActivities[0].startTime);*/
-
+            
             } else if (upcomingActivities.length === 0) {
                 // Si no hay actividades programadas dentro de los próximos 7 días, mostrar el mensaje "No hay actividades programadas"
                document.getElementById('activity-title').innerText = 'No hay actividad programada';
+                 document.getElementById('activity-subtitle').textContent = '';
                         document.getElementById('activity-description').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'flex';
@@ -380,6 +383,7 @@
         .catch(error => {
             console.error('Error fetching data:', error);
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
+                    document.getElementById('activity-subtitle').textContent = '';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
                     document.getElementById('activity-time').innerText = '';
                     startBackgroundRotation();
