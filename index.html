@@ -238,7 +238,7 @@
 
                 // Excluir actividad actual de la barra
                 if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
-                    if (now < eventStartTime && now < eventDateStr) {
+                    if (now < new Date(eventStartTime)) {
                         upcomingActivities.push({
                             title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
                             startTime: eventStartTime,
