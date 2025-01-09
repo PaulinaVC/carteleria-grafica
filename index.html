@@ -310,9 +310,12 @@
               /*  const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);*/
 
+                    
+                 console.log("Fecha comparandose:", date(eventStartTime));
+                 console.log("Fecha actual:", now);
 
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+                if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
                         title: title,
                         subtitle,
@@ -322,7 +325,7 @@
                         imageUrl
                     });
                     console.log("Fecha comparada:", eventStartTime);
-                    ¿console.log("Fecha actual:", now);
+                    console.log("Fecha actual:", now);
 }
                     // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
             upcomingActivities.sort((a, b) => {
