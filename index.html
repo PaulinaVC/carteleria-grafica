@@ -238,7 +238,7 @@
 
                 // Excluir actividad actual de la barra
                 if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
-                    if (now < eventStartTime) {
+                    if (now < eventStartTime && now < eventDateStr) {
                         upcomingActivities.push({
                             title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
                             startTime: eventStartTime,
@@ -250,10 +250,13 @@
 
             // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
             upcomingActivities.sort((a, b) => {
-                if (a.startTime !== b.startTime) {
-                    return a.startTime - b.startTime; // Ordena por hora de inicio
+               /* if (a.startTime !== b.startTime) */
+               if (a.eventDate !== b.eventDate) {
+                 /*   return a.startTime - b.startTime; */ // Ordena por hora de inicio
+                    return a.eventDate - b.eventDate;
                 }
-                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
+               /* return a.eventDate.localeCompare(b.eventDate);*/ // Si las horas de inicio son iguales, ordena por la fecha del evento
+                return a.startTime.localeCompare(b.startTime);
             });
 
             // Limitar la cantidad de actividades a mostrar
@@ -312,7 +315,7 @@
 
                                  
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                if (room === sala && new Date(eventDateStr) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+                if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                     upcomingActivities.push({
                         title: title,
                         subtitle,
@@ -321,7 +324,7 @@
                         eventDate: eventDateStr,
                         imageUrl
                     });
-                    console.log("Fecha comparada:", eventDateStr);
+                    console.log("Fecha comparada:", eventStartTime);
                     console.log("Fecha actual:", now);
 }
                     // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
