@@ -309,15 +309,23 @@
 
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+                const eventStarTimeFormat = new Date(eventStartTime);
+                const eventDateStrFormat = new Date(eventDateStr);
 
              
-                console.log("Fecha posterior 3:", futureDate);
+                /*console.log("Fecha posterior 3:", futureDate);*/
             
               /*  const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);*/
-
+                
+                console.log("room:", room);
+                console.log("sala:", sala);
+                console.log("eventStarTimeFormat", eventStarTimeFormat);
+                console.log("eventDateStrFormat", eventDateStrFormat);
+                
+                
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= futureDate) {
+                if (room === sala && eventStarTimeFormat) > now && eventDateStrFormat <= futureDate) {
                     upcomingActivities.push({
                         title: title,
                         subtitle,
