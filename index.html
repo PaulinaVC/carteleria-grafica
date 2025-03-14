@@ -224,40 +224,38 @@
         .then(response => response.json())
         .then(data => {
             const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
+            const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 días desde ahora
             let upcomingActivities = [];
 
             data.slice(1).forEach(row => {
-    const [title, subtitle, description, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
-    const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-    const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+                const [title, subtitle, description, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
+                const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+                const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
 
-    if (isNaN(eventStartTime.getTime()) || isNaN(eventEndTime.getTime())) {
-        console.error("Invalid date in row:", row);
-        return;
-    }
+                if (isNaN(eventStartTime.getTime()) || isNaN(eventEndTime.getTime())) {
+                    console.error("Invalid date in row:", row);
+                    return;
+                }
 
-    if (room === sala && eventStartTime > now && eventEndTime <= futureDate) {
-        upcomingActivities.push({
-            title,
-            subtitle,
-            description,
-            startTime: startTimeStr,
-            eventDate: eventDateStr,
-            imageUrl
-        });
-    }
-});
+                if (room === sala && eventStartTime > now && eventEndTime <= futureDate) {
+                    upcomingActivities.push({
+                        title,
+                        subtitle,
+                        description,
+                        startTime: startTimeStr,
+                        eventDate: eventDateStr,
+                        imageUrl
+                    });
+                }
+            });
 
-upcomingActivities.sort((a, b) => {
-    const timeDiff = a.startTime.localeCompare(b.startTime);
-    return timeDiff !== 0 ? timeDiff : a.eventDate.localeCompare(b.eventDate);
-});
+            upcomingActivities.sort((a, b) => {
+                const timeDiff = a.startTime.localeCompare(b.startTime);
+                return timeDiff !== 0 ? timeDiff : a.eventDate.localeCompare(b.eventDate);
+            });
 
-            // Limitar la cantidad de actividades a mostrar
             upcomingActivities = upcomingActivities.slice(0, maxActivities);
 
-            // Mostrar las actividades en el ticker
             if (upcomingActivities.length > 0) {
                 const tickerText = upcomingActivities
                     .map(activity => `<span class="ticker-item">${activity.title}</span>`)
