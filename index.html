@@ -318,10 +318,11 @@
               /*  const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);*/
                 
-                console.log("eventStarTimeFormat:", eventStarTimeFormat);
-                console.log("eventDateStrFormat", eventDateStrFormat);
-                
-                
+                console.log("room", room);
+                console.log("sala", sala);
+                console.log("eventStarTimeFormat", eventStarTimeFormat);
+                console.log("now", now);
+                console.log("eventStarTimeFormat", futureDate);
                 
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
                 if (room === sala && eventStarTimeFormat > now && eventStarTimeFormat <= futureDate) {
