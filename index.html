@@ -308,12 +308,7 @@
                 const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                 const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
 
-                console.log("Fecha comparada:", Date(eventStartTime));
-                console.log("Fecha actual:", now);
-                console.log("room:", room);
-                console.log("sala", sala);
-                console.log("Fecha comparada 1:", Date(eventDateStr));
-                console.log("Fecha posterior:", Date(now.getTime() + 7 * 24 * 60 * 60 * 1000));
+                console.log("Fecha posterior:", Date(now.getTime()));
             
               /*  const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);*/
