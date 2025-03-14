@@ -148,7 +148,7 @@
     </div>
 
     <script>
-        import "github.com/jinzhu/now"
+        
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';
         console.log("Sala seleccionada:", sala);
@@ -278,7 +278,8 @@
 
 
              function fetchData() {
-                    console.log("Iniciando fetch de datos...");
+                 import "github.com/jinzhu/now"   
+                 console.log("Iniciando fetch de datos...");
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
