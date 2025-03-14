@@ -320,12 +320,13 @@
                  console.log("eventDateStrformated:", eventDateStrformated);
                  console.log("eventEndTime:", eventEndTime);
                  console.log("futureDate:", futureDate);
+                  console.log("eventDateStr:", eventDateStr);
                 
               
 
                 
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                 if (room === sala && new Date(eventStartTime) > now && eventDateStr <= futureDate) {
+                 if (room === sala && new Date(eventStartTime) > now && eventEndTime <= futureDate) {
                      upcomingActivities.push({
                          title: title,
                          subtitle,
