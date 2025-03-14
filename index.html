@@ -148,6 +148,7 @@
     </div>
 
     <script>
+        import "github.com/jinzhu/now"
         const urlParams = new URLSearchParams(window.location.search);
         const sala = urlParams.get('sala')?.trim() || 'Sala 1';
         console.log("Sala seleccionada:", sala);
