@@ -304,23 +304,28 @@
                  const room = row[5];
                  const eventDateStr = row[6];
                  const imageUrl = row[7];
-
+                 
                /*console.log(`Comparando evento: ${title} | Sala: ${room} | Fecha: ${eventDateStr} | Hora de inicio: ${startTimeStr} | Hora de fin: ${endTimeStr}`);*/
 
                  const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
                  const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
-
+                 const eventDateStr = new Date(eventDateStr)
+                 const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
              
                 /*console.log("Fecha posterior 3:", futureDate);*/
             
               /*  const eventStartTime = parseTimeStringToDate(startTimeStr);
                 const eventEndTime = parseTimeStringToDate(endTimeStr);*/
+                 
+                 console.log("eventDateStr:", eventDateStr);
+                 console.log("eventEndTime:", eventEndTime);
+                 console.log("futureDate:", futureDate);
                 
               
 
                 
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                 if (room === sala && new Date(eventStartTime) > now && new Date(eventDateStr) <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+                 if (room === sala && new Date(eventStartTime) > now && eventDateStr <= futureDate) {
                      upcomingActivities.push({
                          title: title,
                          subtitle,
