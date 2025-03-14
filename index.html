@@ -265,7 +265,7 @@ function fetchUpcomingActivities() {
 
             if (upcomingActivities.length > 0) {
                 const tickerText = upcomingActivities
-                    .map(activity => `<span class="ticker-item">${activity.title} - ${formatDateAndTime(activity.eventDate, activity.startTime)}</span>`)
+                    .map(activity => `<span class="ticker-item">${activity.title} , ${formatDateAndTime(activity.eventDate, activity.startTime)}</span>`)
                     .join('<span class="ticker-separator"> • </span>');
                 document.getElementById('ticker-text').innerHTML = tickerText;
             } else {
