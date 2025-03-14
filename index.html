@@ -347,7 +347,7 @@ function fetchData() {
                 document.getElementById('activity-container').style.display = 'flex';
                 document.getElementById('activity-title').textContent = "Próxima Actividad";
                 document.getElementById('activity-subtitle').textContent = nextActivity.title;
-                document.getElementById('activity-description').innerText = nextActivity.description || '';
+                document.getElementById('activity-description').innerText = nextActivity.subtitle || '';
                 document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
                 startBackgroundRotation();
             } else if (upcomingActivities.length === 0) {
