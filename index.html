@@ -219,18 +219,25 @@
     return now;
 }
 
-         function fetchUpcomingActivities() {
+        function normalizeTime(timeStr) {
+    const [hours, minutes] = timeStr.split(':');
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+}
+
+function fetchUpcomingActivities() {
     fetch(jsonURL)
         .then(response => response.json())
         .then(data => {
             const now = new Date();
-            const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 días desde ahora
+            const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
             let upcomingActivities = [];
 
             data.slice(1).forEach(row => {
                 const [title, subtitle, description, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
-                const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-                const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+                const normalizedStartTime = normalizeTime(startTimeStr);
+                const normalizedEndTime = normalizeTime(endTimeStr);
+                const eventStartTime = new Date(`${eventDateStr}T${normalizedStartTime}:00`);
+                const eventEndTime = new Date(`${eventDateStr}T${normalizedEndTime}:00`);
 
                 if (isNaN(eventStartTime.getTime()) || isNaN(eventEndTime.getTime())) {
                     console.error("Invalid date in row:", row);
@@ -258,7 +265,7 @@
 
             if (upcomingActivities.length > 0) {
                 const tickerText = upcomingActivities
-                    .map(activity => `<span class="ticker-item">${activity.title}</span>`)
+                    .map(activity => `<span class="ticker-item">${activity.title} - ${formatDateAndTime(activity.eventDate, activity.startTime)}</span>`)
                     .join('<span class="ticker-separator"> • </span>');
                 document.getElementById('ticker-text').innerHTML = tickerText;
             } else {
