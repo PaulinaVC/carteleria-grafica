@@ -228,34 +228,31 @@
             let upcomingActivities = [];
 
             data.slice(1).forEach(row => {
-                const title = row[0];
-                const startTimeStr = row[3];
-                const endTimeStr = row[4];
-                const room = row[5];
-                const eventDateStr = row[6];
+    const [title, subtitle, description, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
+    const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
+    const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
 
-                const eventStartTime = new Date(`${eventDateStr}T${startTimeStr}:00`);
-                const eventEndTime = new Date(`${eventDateStr}T${endTimeStr}:00`);
+    if (isNaN(eventStartTime.getTime()) || isNaN(eventEndTime.getTime())) {
+        console.error("Invalid date in row:", row);
+        return;
+    }
 
-                // Excluir actividad actual de la barra
-                if (room?.trim().toLowerCase() === sala.toLowerCase() && now < eventEndTime) {
-                    if (now < eventStartTime) {
-                        upcomingActivities.push({
-                            title: `${title}, ${formatDateAndTime(eventDateStr, startTimeStr)}`,
-                            startTime: eventStartTime,
-                            eventDate: eventDateStr
-                        });
-                    }
-                }
-            });
+    if (room === sala && eventStartTime > now && eventEndTime <= futureDate) {
+        upcomingActivities.push({
+            title,
+            subtitle,
+            description,
+            startTime: startTimeStr,
+            eventDate: eventDateStr,
+            imageUrl
+        });
+    }
+});
 
-            // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
-            upcomingActivities.sort((a, b) => {
-                if (a.startTime !== b.startTime) {
-                    return a.startTime - b.startTime; // Ordena por hora de inicio
-                }
-                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
-            });
+upcomingActivities.sort((a, b) => {
+    const timeDiff = a.startTime.localeCompare(b.startTime);
+    return timeDiff !== 0 ? timeDiff : a.eventDate.localeCompare(b.eventDate);
+});
 
             // Limitar la cantidad de actividades a mostrar
             upcomingActivities = upcomingActivities.slice(0, maxActivities);
@@ -342,11 +339,10 @@
                      // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
                     // Ordenar las actividades por la fecha de inicio (startTime) y luego por la fecha del evento (eventDate)
             upcomingActivities.sort((a, b) => {
-                if (a.startTime !== b.startTime) {
-                    return a.startTime - b.startTime; // Ordena por hora de inicio
-                }
-                return a.eventDate.localeCompare(b.eventDate); // Si las horas de inicio son iguales, ordena por la fecha del evento
-            });
+    const timeA = a.startTime.localeCompare(b.startTime); // Compare "HH:mm" strings
+    if (timeA !== 0) return timeA;
+    return a.eventDate.localeCompare(b.eventDate); // Then by date
+});
 
 
                 // Si la actividad es para el día de hoy y está en el horario actual
