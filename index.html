@@ -324,7 +324,7 @@
                 
                 
                 // Si la actividad es en la sala correcta y está en el rango de 7 días a partir de hoy
-                if (room === sala && eventStarTimeFormat > now && eventDateStrFormat <= futureDate) {
+                if (room === sala && eventStarTimeFormat > now && eventStarTimeFormat <= futureDate) {
                     upcomingActivities.push({
                         title: title,
                         subtitle,
