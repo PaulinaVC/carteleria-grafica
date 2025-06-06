@@ -335,7 +335,7 @@
                         document.getElementById('activity-description').innerText = nextActivity.subtitle || '';
                         document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
                         startBackgroundRotation();
-                    } else if (upcomingActivities.length === 0) {
+                    } else if (!foundActivity && upcomingActivities.length === 0) {
                         console.log("No hay actividades próximas");
                         document.getElementById('activity-title').innerText = 'No hay actividad programada';
                         document.getElementById('activity-subtitle').textContent = '';
