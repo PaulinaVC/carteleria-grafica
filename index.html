@@ -121,6 +121,7 @@
             <h1 id="activity-title">Cargando...</h1>
             <p class="subtitle" id="activity-subtitle">Cargando subtitulo...</p>
             <p class="description" id="activity-description">Cargando descripción...</p>
+            <p class="description" id="activity-description2"></p>
             <p class="date-time" id="activity-time">Cargando fecha...</p>
         </div>
     </div>
@@ -333,6 +334,7 @@
                         document.getElementById('activity-title').textContent = "Próxima Actividad";
                         document.getElementById('activity-subtitle').textContent = nextActivity.title;
                         document.getElementById('activity-description').innerText = nextActivity.subtitle || '';
+                        document.getElementById('activity-description2').innerText = nextActivity.description || '';
                         document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
                         startBackgroundRotation();
                     } else if (!foundActivity && upcomingActivities.length === 0) {
@@ -340,6 +342,7 @@
                         document.getElementById('activity-title').innerText = 'No hay actividad programada';
                         document.getElementById('activity-subtitle').textContent = '';
                         document.getElementById('activity-description').innerText = '';
+                        document.getElementById('activity-description2').innerText = '';
                         document.getElementById('activity-time').innerText = '';
                         document.getElementById('activity-container').style.display = 'flex';
                         document.getElementById('activity-title').classList.add('no-activity-message');
@@ -351,6 +354,7 @@
                     document.getElementById('activity-title').innerText = 'Error al cargar la información.';
                     document.getElementById('activity-subtitle').textContent = '';
                     document.getElementById('activity-description').innerText = 'Por favor, revisa la conexión o los datos.';
+                    document.getElementById('activity-description2').textContent = '';
                     document.getElementById('activity-time').innerText = '';
                     startBackgroundRotation();
                 });
