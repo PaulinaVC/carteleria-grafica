@@ -190,7 +190,7 @@
 
         // Validación de datos completos
         function isValidEvent(row) {
-            const [title, , , startTimeStr, , room, eventDateStr] = row;
+            const [title, , , , startTimeStr, , room, eventDateStr] = row;
             return (
                 title && title.trim() !== '' &&
                 startTimeStr && startTimeStr.trim() !== '' &&
@@ -214,7 +214,7 @@
                             return;
                         }
 
-                        const [title, subtitle, description, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
+                        const [title, subtitle, description, division, startTimeStr, endTimeStr, room, eventDateStr, imageUrl] = row;
                         const normalizedStartTime = normalizeTime(startTimeStr);
                         const normalizedEndTime = normalizeTime(endTimeStr);
                         const eventStartTime = new Date(`${eventDateStr}T${normalizedStartTime}:00`);
