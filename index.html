@@ -211,6 +211,7 @@
                         // Validar que el evento tenga la información necesaria
                         if (!isValidEvent(row)) {
                             console.warn("Evento incompleto omitido:", row);
+                            console.log('Length:', row.length);
                             return;
                         }
 
