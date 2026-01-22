@@ -346,7 +346,7 @@
                         document.getElementById('activity-title').textContent = "Próxima Actividad";
                         document.getElementById('activity-subtitle').textContent = nextActivity.title;
                         document.getElementById('activity-description').innerText = nextActivity.subtitle || '';
-                        document.getElementById('activity-description2').innerText = nextActivity.depart || '';
+                        document.getElementById('activity-description2').innerText = nextActivity.description || '';
                         document.getElementById('division').innerText = nextActivity.division || '';
                         document.getElementById('activity-time').textContent = formatDateAndTime(nextActivity.eventDate, nextActivity.startTime);
                         startBackgroundRotation();
